@@ -18,6 +18,34 @@ public abstract class Player {
 	protected String turnLog;
 	protected PlayerCommunication pc;
 	protected int cardsPlayedThisTurn;
+	//Used for statistics at game end: 1 = in deck, 0 = not in deck
+	private int[] cardsOwned = {
+		//Province
+		0,
+		//Duchy
+		0,
+		//Estate
+		0,
+		//Copper
+		0,
+		//Silver
+		0,
+		//Gold
+		0,
+		//Curse
+		0,
+		//Kingdom Cards
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0
+	};
 	
 	//constructor
 	public Player(Kingdom k, PlayerCommunication pc) {
@@ -443,6 +471,7 @@ public abstract class Player {
 		return value;
 	}
 	
+	//counts VPs and populates cardsOwned
 	public int getVictoryPoints() {
 		int victoryPoints = 0;
 		
@@ -450,23 +479,30 @@ public abstract class Player {
 		
 		//count hand
 		for(Card c: hand.getHand()) {
+			cardsOwned[kingdom.kingdomIndex(c.getName())] ++;
 			if(c.isCardType(CardType.VICTORY) || c.isCardType(CardType.CURSE)) {
 				victoryPoints += scoreCard(c.getName(), totalCards);
 			}
 		}
 		//count deck
 		for(Card c: deck.getDeck()) {
+			cardsOwned[kingdom.kingdomIndex(c.getName())] ++;
 			if(c.isCardType(CardType.VICTORY) || c.isCardType(CardType.CURSE)) {
 				victoryPoints += scoreCard(c.getName(), totalCards);
 			}
 		}
 		//count discard
 		for(Card c: deck.getDiscard()) {
+			cardsOwned[kingdom.kingdomIndex(c.getName())] ++;
 			if(c.isCardType(CardType.VICTORY) || c.isCardType(CardType.CURSE)) {
 				victoryPoints += scoreCard(c.getName(), totalCards);
 			}
 		}
 		return victoryPoints;
+	}
+	
+	public int[] getCardsOwned() {
+		return cardsOwned;
 	}
 	
 }

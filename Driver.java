@@ -9,6 +9,7 @@ public class Driver {
 		int turns = 0;
 		int cardsPlayed = 0;
 		int[] cumulativeScores = {0,0};
+		StatAnalysis sa = new StatAnalysis();
 		
 		long startTime = System.nanoTime();
 		
@@ -21,6 +22,7 @@ public class Driver {
 			cumulativeScores[1] += scores[1];
 			turns += gs.getTurns();
 			cardsPlayed += gs.getCardsPlayed();
+			sa.addWinnerCards(gs.getWinnerCardsOwned());
 		}
 		
 		long endTime = System.nanoTime();
@@ -32,6 +34,9 @@ public class Driver {
 		System.out.println("Player 1: Win %: " + 100 *(double)winner[0]/games + " - Avg. Score: " + (double)cumulativeScores[0]/games);
 		System.out.println("Player 2: Win %: " + 100 *(double)winner[1]/games + " - Avg. Score: " + (double)cumulativeScores[1]/games);
 		System.out.println("Draw %: " + 100 *(double)winner[2]/games);
+		
+		//calculate and print analysis
+		sa.printWinnerOwnPercentage();
 		
 	}
 

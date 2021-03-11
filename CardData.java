@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class CardData {
 
-	private static String[] cardNames = {
+	public static String[] cardNames = {
 		"PROVINCE",
 		"DUCHY",
 		"ESTATE",
@@ -176,7 +176,7 @@ public class CardData {
 		return cards;
 	}
 	
-	private static int getCardNumber(String name) {
+	public static int getCardNumber(String name) {
 		for(int i = 0;i < cardNames.length;i ++) {
 			if(name.equalsIgnoreCase(cardNames[i])) {
 				return i;

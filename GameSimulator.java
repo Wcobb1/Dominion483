@@ -1,5 +1,7 @@
 package dominionAgents;
 
+import java.util.ArrayList;
+
 public class GameSimulator {
 
 	private Kingdom kingdom;
@@ -9,6 +11,8 @@ public class GameSimulator {
 	private int[] scores = {0,0};
 	private int turn = 1;
 	private int cardsPlayed = 0;
+	private boolean p1MoreTurns = false;
+	private int[] winnerCards;
 	
 	public GameSimulator() {
 		kingdom = new Kingdom();
@@ -36,15 +40,25 @@ public class GameSimulator {
 		scores[1] = p2.getVictoryPoints();
 		int p1Score = scores[0];
 		int p2Score = scores[1];
-		//draw
+		//tied
 		if(p1Score == p2Score) {
+			//tie-breaker: does p2 have less turns played than p1?
+			if(p1MoreTurns) {
+				winnerCards = p2.getCardsOwned();
+				//p2 wins
+				return 1;
+			}
+			winnerCards = p1.getCardsOwned();
+			//If not: draw
 			return 2;
 		}
 		//p1 wins
 		if(p1Score > p2Score) {
+			winnerCards = p1.getCardsOwned();
 			return 0;
 		}
 		//p2 wins
+		winnerCards = p2.getCardsOwned();
 		return 1;
 	}
 	
@@ -60,6 +74,8 @@ public class GameSimulator {
 				p2.takeTurn();
 				cardsPlayed += p2.getNumCardsPlayed();
 				//System.out.println(p2.getTurnLog());
+			}else {
+				p1MoreTurns = true;
 			}
 		}
 		return getWinner();
@@ -75,6 +91,15 @@ public class GameSimulator {
 	
 	public int getCardsPlayed() {
 		return cardsPlayed;
+	}
+	
+	public ArrayList<StringInt> getWinnerCardsOwned() {
+		ArrayList<StringInt> cardCounts = new ArrayList<StringInt>();
+		for(int i = 0;i < winnerCards.length;i ++) {
+			StringInt si = new StringInt(kingdom.cardNameFromIndex(i), winnerCards[i]);
+			cardCounts.add(si);
+		}
+		return cardCounts;
 	}
 	
 }

@@ -47,6 +47,10 @@ public class Kingdom {
 		return -1;
 	}
 	
+	public String cardNameFromIndex(int index) {
+		return supply.get(index).getName();
+	}
+	
 	//decrement card count(given name)
 	public void cardRemoved(String name) {
 		int index = kingdomIndex(name);
