@@ -4,7 +4,7 @@ public class Driver {
 
 	public static void main(String[] args) {
 		
-		int games = 1000;
+		int games = 100;
 		int[] winner = {0,0,0};
 		int turns = 0;
 		int cardsPlayed = 0;

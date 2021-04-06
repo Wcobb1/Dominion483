@@ -118,6 +118,7 @@ public abstract class Player {
 		turnLog = "";
 		cardsPlayedThisTurn = 0;
 		
+		//for game log
 		turnLog += "Cards Played: ";
 		
 		//Play phase
@@ -125,6 +126,7 @@ public abstract class Player {
 		resolveActionPhase();
 		playTreasures();
 		
+		//for game log
 		turnLog += "\nCards Gained: ";
 		
 		//Buy phase
