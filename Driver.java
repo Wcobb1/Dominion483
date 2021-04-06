@@ -36,7 +36,7 @@ public class Driver {
 		System.out.println("Draw %: " + 100 *(double)winner[2]/games);
 		
 		//calculate and print analysis
-		sa.printWinnerOwnPercentage();
+		//sa.printWinnerOwnPercentage();
 		
 	}
 

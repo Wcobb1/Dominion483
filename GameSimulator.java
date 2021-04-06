@@ -20,7 +20,7 @@ public class GameSimulator {
 		pc = new PlayerCommunication();
 		
 		p1 = new BasicBotV1_0(kingdom, pc);
-		p2 = new BasicBotV1_0(kingdom, pc);
+		p2 = new RushBotV1_0(kingdom, pc);
 		
 		pc.addPlayer(p1);
 		pc.addPlayer(p2);

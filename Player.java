@@ -117,14 +117,21 @@ public abstract class Player {
 		buys = 1;
 		turnLog = "";
 		cardsPlayedThisTurn = 0;
-		//Play phase
+		
 		turnLog += "Cards Played: ";
+		
+		//Play phase
+		playActionAdders();
 		resolveActionPhase();
 		playTreasures();
+		
 		turnLog += "\nCards Gained: ";
+		
 		//Buy phase
 		resolveBuyPhase();
+		
 		turnLog += "\n";
+		
 		//finish turn
 		cleanup();
 	}
@@ -303,6 +310,18 @@ public abstract class Player {
 	
 	public void resolveTreasure(Card c) {
 		coins += c.getCoinsAdded();
+	}
+	
+	public void playActionAdders() {
+		//Step 1: Play action adders
+		for(int i = 0;i < hand.getHand().size();i ++) {
+			if(hand.getHand().get(i).getActionsAdded() > 0) {
+				//play action adder
+				playCard(hand.getHand().get(i));
+				//recurse to step 1(it's possible new cards were drawn, for example, if a village were played in this step)
+				playActionAdders();
+			}
+		}
 	}
 	
 	public void resolveMine() {

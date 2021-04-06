@@ -5,57 +5,27 @@ import java.util.Random;
 
 import dominionAgents.PlayerCommunication.PlayerCode;
 
-public class BasicBotV1_0 extends Player {
-
-	public BasicBotV1_0(Kingdom k, PlayerCommunication pc) {
+public class RushBotV1_0 extends Player{
+	
+	public RushBotV1_0(Kingdom k, PlayerCommunication pc) {
 		super(k, pc);
 	}
 	
 	@Override
-	//Google Drawing of this algorithm: https://docs.google.com/drawings/d/1q42KrM8pCHeYYhbGws4F10Yqcqm_uGcYb_P---WAUy0/edit?usp=sharing
 	protected void resolveActionPhase() {
 		
 		//Steps 1 and 2A
 		playPhaseAlgorithm1();
 		
-		//Step 2: Check for coin adder
-		int highest = 0;
-		int index = 0;
-		
-		for(int i = 0;i < hand.getHand().size();i ++) {
-			if(hand.getHand().get(i).getCoinsAdded() > highest) {
-				highest = hand.getHand().get(i).getCoinsAdded();
-				index = i;
+		//Step 2: Play any workshops
+		for(int i = 0;i < hand.getHand().size() && actions > 0;i ++) {
+			if(hand.getHand().get(i).getName().equalsIgnoreCase("WORKSHOP")) {
+				playCard(hand.getHand().get(i));
 			}
 		}
 		
-		//if coin adder was found, play highest coin adder
-		if(highest > 0) {
-			//play coin adder
-			playCard(hand.getHand().get(index));
-			
-		}
-		
-		//only continue if there are remaining actions
-		if(actions > 0) {
-			//reset highest and index to 0
-			highest = 0;
-			index = 0;
-			
-			//Step 3: Check for card adder
-			for(int i = 0;i < hand.getHand().size();i ++) {
-				if(hand.getHand().get(i).getCardsAdded() > highest) {
-					highest = hand.getHand().get(i).getCardsAdded();
-					index = i;
-				}
-			}
-			
-			//if card adder was found, play highest card adder
-			if(highest > 0) {
-				//play card adder
-				playCard(hand.getHand().get(index));
-			}
-		}
+		//Step 3: Play highest buy adders
+		playBuyAdders();
 		
 		//Step 4: play remaining action cards from left to right
 		for(int i = 0;i < hand.getHand().size() && actions > 0;i ++) {
@@ -95,9 +65,78 @@ public class BasicBotV1_0 extends Player {
 				playPhaseAlgorithm1();
 			}
 		}
+		
 	}
 
-	//Google Drawing of this algorithm: https://docs.google.com/drawings/d/1vjC6Dd4vrZFLf848YE90ssPsTT5bSQL_mGbvids2aPs/edit?usp=sharing
+	public void playBuyAdders() {
+		int highest = 0;
+		int index = 0;
+		//find highest buy adder(if one is in hand)
+		for(int j = 0;j < hand.getHand().size();j ++) {
+			if(hand.getHand().get(j).getBuysAdded() > highest) {
+				highest = hand.getHand().get(j).getBuysAdded();
+				index = j;
+			}
+		}
+		
+		if(highest > 0) {
+			playCard(hand.getHand().get(index));
+			if(actions > 0) {
+				playBuyAdders();
+			}
+		}
+		
+	}
+	
+	/**
+	@Override
+	protected void resolveBuyPhase() {
+		
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		ArrayList<Card> idealChoices = new ArrayList<Card>();
+		for(SupplyPile sp: supply) {
+			Card c = sp.getCard();
+			if(c.getCost() < coins) {
+				if(c.getName().equalsIgnoreCase("ESTATE")) {
+					idealChoices.add(c);
+				}else if(c.getName().equalsIgnoreCase("COPPER")) {
+					idealChoices.add(c);
+				}else if(sp.getCardsRemaining() < 3){
+					idealChoices.add(c);
+				}else if(c.getName().equalsIgnoreCase("WOODCUTTER")) {
+					idealChoices.add(c);
+				}else if(c.getName().equalsIgnoreCase("WORKSHOP")) {
+					idealChoices.add(c);
+				}else if(c.getName().equalsIgnoreCase("GARDENS")) {
+					idealChoices.add(c);
+				}
+			}
+		}
+		
+		//buy highest priority card from idealChoices if possible
+		if(idealChoices.size() > 0) {
+			
+			buyCard(idealChoices.get(0).getName());
+			//if there is still at least 1 buy, recurse
+			if(buys > 0) {
+				resolveBuyPhase();
+			}
+		}else {
+			//otherwise buy most expensive card possible
+			ArrayList<Card> otherChoices = highestCostList(coins);
+			if(otherChoices.size() > 0) {
+				buyCard(otherChoices.get(0).getName());
+				//if there is still at least 1 buy, recurse
+				if(buys > 0) {
+					resolveBuyPhase();
+				}
+			}
+			
+		}
+
+	}
+
+	**/
 	@Override
 	protected void resolveBuyPhase() {
 		
@@ -123,7 +162,7 @@ public class BasicBotV1_0 extends Player {
 		ArrayList<Card> choices = new ArrayList<Card>();
 		for(SupplyPile sp: supply) {
 			Card c = sp.getCard();
-			if(c.getCost() <= cost && sp.getCardsRemaining() > 0 && !c.getName().equalsIgnoreCase("CURSE")) {
+			if(c.getCost() <= cost && sp.getCardsRemaining() > 0 && !c.getName().equalsIgnoreCase("CURSE")  && !c.getName().equalsIgnoreCase("CHAPEL")) {
 				choices.add(c);
 				if(c.getCost() > highestPossible) {
 					highestPossible = c.getCost();
@@ -326,5 +365,5 @@ public class BasicBotV1_0 extends Player {
 		}
 		
 	}
-
+	
 }
