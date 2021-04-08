@@ -159,7 +159,10 @@ public class CardData {
 		ArrayList<String> cardsChosen = new ArrayList<String>();
 		//Add all possible cards to ArrayList
 		for(int i = 6;i < cardNames.length;i ++) {
-			cardsChosen.add(cardNames[i]);
+			//Don't include Curse as an option for the kingdom
+			if(i != 12) {
+				cardsChosen.add(cardNames[i]);
+			}
 		}
 		//Remove cards randomly until only 10 remain
 		while(cardsChosen.size() > 10) {

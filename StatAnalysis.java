@@ -7,6 +7,7 @@ import dominionAgents.CardData.CardType;
 public class StatAnalysis {
 	
 	ArrayList<ArrayList<StringInt>> winnerCards;
+	private boolean calculated = false;
 	
 	int[] winnerOwnCount = {
 		//PROVINCE
@@ -150,7 +151,7 @@ public class StatAnalysis {
 		winnerCards.add(wsi);
 	}
 	
-	public void printWinnerOwnPercentage() {
+	public void calculateWinnerOwnPercentage() {
 		//process cards
 		for(int i = 0;i < winnerCards.size();i ++) {
 			for(int j = 0;j < winnerCards.get(i).size();j ++) {
@@ -164,14 +165,19 @@ public class StatAnalysis {
 				}
 			}
 		}
-		//calculate and print results
-		System.out.println("Card\t\t% games owned by winner:");
-		for(int i = 0;i < cardGameCount.length;i ++) {
-			float result = (float)winnerOwnCount[i]/cardGameCount[i];
-			String s = String.format("%-20s %s", CardData.cardNames[i], result);
-			System.out.println(s);
-		}
+		calculated = true;
 	}
 	
+	public void printWinnerOwnPercentage() {
+		if(calculated) {
+			//calculate and print results
+			System.out.println("Card\t\t% games owned by winner:");
+			for(int i = 0;i < cardGameCount.length;i ++) {
+				float result = (float)winnerOwnCount[i]/cardGameCount[i];
+				String s = String.format("%-20s %s", CardData.cardNames[i], result);
+				System.out.println(s+"\t\t"+winnerOwnCount[i]+"/"+cardGameCount[i]);
+			}
+		}
+	}
 	
 }

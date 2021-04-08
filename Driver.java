@@ -4,7 +4,7 @@ public class Driver {
 
 	public static void main(String[] args) {
 		
-		int games = 100;
+		int games = 1000;
 		int[] winner = {0,0,0};
 		int turns = 0;
 		int cardsPlayed = 0;
@@ -34,6 +34,9 @@ public class Driver {
 		System.out.println("Player 1: Win %: " + 100 *(double)winner[0]/games + " - Avg. Score: " + (double)cumulativeScores[0]/games);
 		System.out.println("Player 2: Win %: " + 100 *(double)winner[1]/games + " - Avg. Score: " + (double)cumulativeScores[1]/games);
 		System.out.println("Draw %: " + 100 *(double)winner[2]/games);
+		
+		sa.calculateWinnerOwnPercentage();
+		sa.printWinnerOwnPercentage();
 		
 		//calculate and print analysis
 		//sa.printWinnerOwnPercentage();
