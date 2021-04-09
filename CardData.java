@@ -189,6 +189,14 @@ public class CardData {
 		return -1;
 	}
 	
+	public static String getCardName(int num) {
+		if(num < cardNames.length) {
+			return cardNames[num];
+		}
+		//Name isn't found
+		return "Card not found";
+	}
+	
 	public static void setupCard(Card c, String cardName) {
 		
 		int cardNum = getCardNumber(cardName);
