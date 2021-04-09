@@ -5,27 +5,37 @@ import java.util.ArrayList;
 public class DecisionTreePlayerV1_0 extends BasicBotV1_0{
 
 	private SortableGiniCardList earlyPrioList;
+	private SortableGiniCardList midPrioList;
+	private SortableGiniCardList latePrioList;
 	
-	public DecisionTreePlayerV1_0(Kingdom k, PlayerCommunication pc, SortableGiniCardList earlyPrioList) {
+	public DecisionTreePlayerV1_0(Kingdom k, PlayerCommunication pc, SortableGiniCardList earlyPrioList, SortableGiniCardList midPrioList, SortableGiniCardList latePrioList) {
 		super(k, pc);
 		this.earlyPrioList = earlyPrioList;
+		this.midPrioList = midPrioList;
+		this.latePrioList = latePrioList;
 		removeUnusedCards();
 	}
 	
-	public void removeUnusedCards() {
+	public void removeUnusedCardsFromList(SortableGiniCardList sgcl) {
 		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
-		for(int i = 0;i < earlyPrioList.size();i ++) {
+		for(int i = 0;i < sgcl.size();i ++) {
 			boolean found = false;
 			for(int j = 0;j < supply.size() && !found;j ++) {
-				if(supply.get(j).getName().equalsIgnoreCase(earlyPrioList.get(i).getName())) {
+				if(supply.get(j).getName().equalsIgnoreCase(sgcl.get(i).getName())) {
 					found = true;
 				}
 			}
 			if(!found) {
-				earlyPrioList.remove(i);
+				sgcl.remove(i);
 				i --;
 			}
 		}
+	}
+	
+	public void removeUnusedCards() {
+		removeUnusedCardsFromList(earlyPrioList);
+		removeUnusedCardsFromList(midPrioList);
+		removeUnusedCardsFromList(latePrioList);
 	}
 	
 	public String chooseHighestPriorityCardForCost(int cost, SortableGiniCardList sgcl) {
@@ -42,11 +52,16 @@ public class DecisionTreePlayerV1_0 extends BasicBotV1_0{
 	}
 	
 	public void resolveBuyPhase() {
+		String cardName = "NA";
 		if(turnNumber < 3) {
-			String cardName = chooseHighestPriorityCardForCost(coins, earlyPrioList);
-			if(!cardName.equalsIgnoreCase("NA")) {
-				buyCard(cardName);
-			}
+			cardName = chooseHighestPriorityCardForCost(coins, earlyPrioList);
+		}else if(turnNumber < 14) {
+			cardName = chooseHighestPriorityCardForCost(coins, midPrioList);
+		}else {
+			cardName = chooseHighestPriorityCardForCost(coins, latePrioList);
+		}
+		if(!cardName.equalsIgnoreCase("NA")) {
+			buyCard(cardName);
 		}
 		super.resolveBuyPhase();
 	}

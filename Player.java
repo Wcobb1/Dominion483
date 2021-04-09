@@ -131,9 +131,18 @@ public abstract class Player {
 		}
 		
 		while(cardsGained.size() > 0) {
+			//for stats/analysis/training
 			if(turnNumber < 3) {
 				for(Card c:cardsGained) {
 					ps.addCardFirstTwoTurns(c);
+				}
+			}else if(turnNumber < 14) {
+				for(Card c:cardsGained) {
+					ps.addCardMidGame(c);
+				}
+			}else {
+				for(Card c:cardsGained) {
+					ps.addCardLateGame(c);
 				}
 			}
 			Card c = cardsGained.get(0);

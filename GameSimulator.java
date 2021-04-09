@@ -124,4 +124,32 @@ public class GameSimulator {
 			return p1Stats.getCardsFirstTwoTurns();
 		}
 	}
+	
+	public ArrayList<String> getPlayerCardsGainedMidGame(boolean winningPlayer){
+		if(winner == 0) {
+			if(winningPlayer) {
+				return p1Stats.getCardsMidGame();
+			}
+			return p2Stats.getCardsMidGame();
+		}else{
+			if(winningPlayer) {
+				return p2Stats.getCardsMidGame();
+			}
+			return p1Stats.getCardsMidGame();
+		}
+	}
+	
+	public ArrayList<String> getPlayerCardsGainedLateGame(boolean winningPlayer){
+		if(winner == 0) {
+			if(winningPlayer) {
+				return p1Stats.getCardsLateGame();
+			}
+			return p2Stats.getCardsLateGame();
+		}else{
+			if(winningPlayer) {
+				return p2Stats.getCardsLateGame();
+			}
+			return p1Stats.getCardsLateGame();
+		}
+	}
 }

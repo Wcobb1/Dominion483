@@ -19,7 +19,7 @@ public class Driver {
 			Kingdom kingdom = new Kingdom();
 			PlayerCommunication pc = new PlayerCommunication();
 			Player p1 = new BasicBotV1_0(kingdom, pc);
-			Player p2 = new DecisionTreePlayerV1_0(kingdom, pc, trainer.getEarlyPrioList());
+			Player p2 = new DecisionTreePlayerV1_0(kingdom, pc, trainer.getEarlyPrioList(), trainer.getMidPrioList(), trainer.getLatePrioList());
 			GameSimulator gs = new GameSimulator(p1, p2);
 			int result = gs.runGame();
 			winner[result] ++;
@@ -29,7 +29,6 @@ public class Driver {
 			turns += gs.getTurns();
 			cardsPlayed += gs.getCardsPlayed();
 			sa.addWinnerCards(gs.getWinnerCardsOwned());
-			sa.addCardsFirstTwoTurns(gs.getPlayerCardsGainedFirstTwoTurns(true), gs.getPlayerCardsGainedFirstTwoTurns(false));
 		}
 		
 		long endTime = System.nanoTime();

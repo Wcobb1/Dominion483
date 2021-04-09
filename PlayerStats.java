@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public class PlayerStats {
 
 	protected ArrayList<Card> cardsGainedFirstTwoTurns = new ArrayList<Card>();
+	protected ArrayList<Card> cardsMidGame = new ArrayList<Card>();
+	protected ArrayList<Card> cardsLateGame = new ArrayList<Card>();
 	//Used for statistics at game end
 	private int[] cardsOwned = {
 		//Province
@@ -38,6 +40,14 @@ public class PlayerStats {
 		cardsGainedFirstTwoTurns.add(c);
 	}
 	
+	public void addCardMidGame(Card c) {
+		cardsMidGame.add(c);
+	}
+	
+	public void addCardLateGame(Card c) {
+		cardsLateGame.add(c);
+	}
+	
 	public void addCardOwned(int index) {
 		cardsOwned[index] ++;
 	}
@@ -49,6 +59,22 @@ public class PlayerStats {
 	public ArrayList<String> getCardsFirstTwoTurns(){
 		ArrayList<String> al = new ArrayList<String>();
 		for(Card c:cardsGainedFirstTwoTurns) {
+			al.add(c.getName());
+		}
+		return al;
+	}
+	
+	public ArrayList<String> getCardsMidGame(){
+		ArrayList<String> al = new ArrayList<String>();
+		for(Card c:cardsMidGame) {
+			al.add(c.getName());
+		}
+		return al;
+	}
+	
+	public ArrayList<String> getCardsLateGame(){
+		ArrayList<String> al = new ArrayList<String>();
+		for(Card c:cardsLateGame) {
 			al.add(c.getName());
 		}
 		return al;
