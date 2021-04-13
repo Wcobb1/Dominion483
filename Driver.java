@@ -13,14 +13,15 @@ public class Driver {
 		
 		long startTime = System.nanoTime();
 		
-		DecisionTreePlayerTrainer trainer = new DecisionTreePlayerTrainer(1000);
+		//DecisionTreePlayerTrainer trainer = new DecisionTreePlayerTrainer(1000);
 		
 		for(int i = 0;i < games;i ++) {
 			Kingdom kingdom = new Kingdom();
 			PlayerCommunication pc = new PlayerCommunication();
 			//Set player types
 			Player p1 = new BasicBotV1_0(kingdom, pc);
-			Player p2 = new MoneyMakingBotV1_0(kingdom,pc);//DecisionTreePlayerV1_0(kingdom, pc, trainer.getEarlyPrioList(), trainer.getMidPrioList(), trainer.getLatePrioList());
+			//Player p2 = new DecisionTreePlayerV1_0(kingdom, pc, trainer.getEarlyPrioList(), trainer.getMidPrioList(), trainer.getLatePrioList());
+			Player p2 = new MoneyMakingBotV1_0(kingdom, pc);
 			GameSimulator gs = new GameSimulator(p1, p2);
 			int result = gs.runGame();
 			winner[result] ++;
@@ -41,6 +42,7 @@ public class Driver {
 		System.out.println("Player 1: Win %: " + 100 *(double)winner[0]/games + " - Avg. Score: " + (double)cumulativeScores[0]/games);
 		System.out.println("Player 2: Win %: " + 100 *(double)winner[1]/games + " - Avg. Score: " + (double)cumulativeScores[1]/games);
 		System.out.println("Draw %: " + 100 *(double)winner[2]/games);
+		
 		//sa.printFirstTwoRounds();
 		
 		//sa.calculateWinnerOwnPercentage();
