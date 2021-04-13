@@ -13,49 +13,38 @@ import java.util.Random;
 public class MoneyMakingBotV1_0 {
     
     boolean treasureInSupply = false;
-    
+    int actionNum = 0;   
     public MoneyMakingBotV1_0(Kingdom k, PlayerCommunication pc) {
 		super(k, pc);
 
-        ArrayList<SupplyPile> cardsInSupply = k.getSupplyPiles();
-        for(int i = 0;i < cardsInSupply.size() && !treasureInSupply;i ++) {
-            Card c = cardsInSupply.get(i).getCard();
-            if(c.isCardType(CardData.CardType.TREASURE)) {
-                treasureInSupply = true;
-            }
-        }
+        
     }
 
 
     protected void resolveBuyPhase() {
-		
-		if(treasureInSupply) {
-			//buy an treasure card if possible
-			Card potentialCard = getHighestTrasurePossible(coins);
-			if(potentialCard != null) {
-				buyCard(potentialCard.getName());
-			}
-			
-			super.resolveBuyPhase();
-			
-		}else {
-			super.resolveBuyPhase();
-		}
-		
-	}
+        
 
-    public Card getHighestTrasurePossible(int numCoins) {
-		Card c = null;
-		int highestFound = 0;
-		for(SupplyPile sp:kingdom.getSupplyPiles()) {
-			Card supplyCard = sp.getCard();
-			if(supplyCard.isCardType(CardData.CardType.TREASURE) && supplyCard.getCost() <= numCoins && supplyCard.getCost() > highestFound) {
-				highestFound = supplyCard.getCost();
-				c = supplyCard;
-			}
-		}
-		return c;
+        String cardToBuy = cheapestBuy())
+        if(coins < 8 && !cardToBuy.isNull()){
+            buyCard(cardToBuy);
+        }
+        while(kingdom.canBuy("Provice") && (coins >= 8){// buy as many provinces as you want
+           buyCard("Provice");
+        }
+            
+        
+
+        
 	}
+    protected String cheapestBuy(){
+
+        System.out.print("hi");
+
+
+
+        return s;
+    }
+    
 
 
 
