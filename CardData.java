@@ -214,4 +214,20 @@ public class CardData {
 		c.setCost(cardValues[cardNum][2][0]);
 	}
 	
+
+	public static ArrayList<Pair<Integer,Float>> ratioCalc(){
+        
+		ArrayList<Pair<Integer,Float>> wantedCards = new ArrayList<>(); 
+		float ratio = 0;
+		int i =0;
+		for(int[][][] cp: cardValues ) {
+			int[] cA = cp[i][1];
+			ratio = (cA[0] + cA[1] + cA[2] + cA[3])/cp[i][2][0];
+			wantedCards.add(new Pair<Integer,Float>(i,ratio));
+			System.out.print(wantedCards+"\n");
+			i ++;
+		}
+		return wantedCards;
+	}
+
 }

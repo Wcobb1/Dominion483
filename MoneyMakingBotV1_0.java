@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import dominionAgents.CardData.CardType;
+import jdk.internal.util.xml.impl.Pair;
 
 // The Bot is similar to the rush bot but more laid back, the goal of the ai is to keep buying treasure cards until they are able to buy point cards
 // priortizing higher point cards over lower value ones: in pratice the AI would buy try to get cards that allow it to buy more then once if able it buys those cards 
@@ -15,33 +16,19 @@ import dominionAgents.CardData.CardType;
 public class MoneyMakingBotV1_0 extends BasicBotV1_0{
     
 
-    ArrayList<Pair<Card,Double>> wantedCards; 
+    
       
     boolean treasureInSupply = false;
     int actionNum = 0;   
     public MoneyMakingBotV1_0(Kingdom k, PlayerCommunication pc) {
 		super(k, pc);
-        ratioCalc();
+        CardData.ratioCalc();
 
     }
 
 
-    protected void ratioCalc(){
-        int ratio =0;
-		
-		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
-		for(SupplyPile sp: supply) {
-			
-            Card c = sp.getCard();
-			if(c.isCardType(CardType.ACTION) && c.getBuysAdded() + c.getActionsAdded() + c.getCardsAdded() > 0) {
-                //System.out.print(c.getName()+"\n");
-                
-
-			}
-		}
-
-
-    }
+    
+    
 
     protected void resolveBuyPhase() {
         
