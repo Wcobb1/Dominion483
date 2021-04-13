@@ -25,7 +25,7 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         
 
         String cardToBuy = cheapestBuy();
-        if(coins < 8 && cardToBuy != null && actionsNum > 5){
+        if(coins < 8 && cardToBuy != null && actionNum > 5){
             buyCard(cardToBuy);
             actions += 1;
         }
