@@ -20,7 +20,7 @@ public class Driver {
 			PlayerCommunication pc = new PlayerCommunication();
 			//Set player types
 			Player p1 = new BasicBotV1_0(kingdom, pc);
-			Player p2 = new DecisionTreePlayerV1_0(kingdom, pc, trainer.getEarlyPrioList(), trainer.getMidPrioList(), trainer.getLatePrioList());
+			Player p2 = new MoneyMakingBotV1_0(kingdom,pc);//DecisionTreePlayerV1_0(kingdom, pc, trainer.getEarlyPrioList(), trainer.getMidPrioList(), trainer.getLatePrioList());
 			GameSimulator gs = new GameSimulator(p1, p2);
 			int result = gs.runGame();
 			winner[result] ++;

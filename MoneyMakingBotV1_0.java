@@ -25,8 +25,9 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         
 
         String cardToBuy = cheapestBuy();
-        if(coins < 8 && cardToBuy != null){
+        if(coins < 8 && cardToBuy != null && actionsNum > 5){
             buyCard(cardToBuy);
+            actions += 1;
         }
         while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you want
            buyCard("Province");
