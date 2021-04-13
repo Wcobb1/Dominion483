@@ -29,6 +29,8 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
             buyCard(cardToBuy);
             actions += 1;
         }
+
+
         while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you want
            buyCard("Province");
         }
@@ -40,6 +42,11 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
     protected String cheapestBuy(){
 
     	String s = null;
+        ArrayList<SupplyPile> cardsInPlay = getSupplyPiles();
+        for(int i =0; i < cardsInPlay.legnth(); i++){
+            System.out.println(i);
+        }
+
         //System.out.println("hi");
 
 
