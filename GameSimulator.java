@@ -8,19 +8,24 @@ public class GameSimulator {
 	private PlayerCommunication pc;
 	private Player p1;
 	private Player p2;
+	private PlayerStats p1Stats;
+	private PlayerStats p2Stats;
 	private int[] scores = {0,0};
 	private int turn = 1;
 	private int cardsPlayed = 0;
 	private boolean p1MoreTurns = false;
 	private int[] winnerCards;
+	private int winner = -1;
 	
-	public GameSimulator() {
-		kingdom = new Kingdom();
+	public GameSimulator(Player p1, Player p2) {
+		kingdom = p1.getKingdom();
+		pc = p1.getPlayerCommunication();
 		
-		pc = new PlayerCommunication();
+		this.p1 = p1;
+		this.p2 = p2;
 		
-		p1 = new BasicBotV1_0(kingdom, pc);
-		p2 = new RushBotV1_0(kingdom, pc);
+		p1Stats = p1.getPlayerStats();
+		p2Stats = p2.getPlayerStats();
 		
 		pc.addPlayer(p1);
 		pc.addPlayer(p2);
@@ -44,21 +49,25 @@ public class GameSimulator {
 		if(p1Score == p2Score) {
 			//tie-breaker: does p2 have less turns played than p1?
 			if(p1MoreTurns) {
-				winnerCards = p2.getCardsOwned();
+				winnerCards = p2Stats.getCardsOwned();
 				//p2 wins
+				winner = 1;
 				return 1;
 			}
-			winnerCards = p1.getCardsOwned();
+			winnerCards = p1Stats.getCardsOwned();
 			//If not: draw
+			winner = 2;
 			return 2;
 		}
 		//p1 wins
 		if(p1Score > p2Score) {
-			winnerCards = p1.getCardsOwned();
+			winnerCards = p1Stats.getCardsOwned();
+			winner = 0;
 			return 0;
 		}
 		//p2 wins
-		winnerCards = p2.getCardsOwned();
+		winnerCards = p2Stats.getCardsOwned();
+		winner = 1;
 		return 1;
 	}
 	
@@ -102,4 +111,45 @@ public class GameSimulator {
 		return cardCounts;
 	}
 	
+	public ArrayList<String> getPlayerCardsGainedFirstTwoTurns(boolean winningPlayer){
+		if(winner == 0) {
+			if(winningPlayer) {
+				return p1Stats.getCardsFirstTwoTurns();
+			}
+			return p2Stats.getCardsFirstTwoTurns();
+		}else{
+			if(winningPlayer) {
+				return p2Stats.getCardsFirstTwoTurns();
+			}
+			return p1Stats.getCardsFirstTwoTurns();
+		}
+	}
+	
+	public ArrayList<String> getPlayerCardsGainedMidGame(boolean winningPlayer){
+		if(winner == 0) {
+			if(winningPlayer) {
+				return p1Stats.getCardsMidGame();
+			}
+			return p2Stats.getCardsMidGame();
+		}else{
+			if(winningPlayer) {
+				return p2Stats.getCardsMidGame();
+			}
+			return p1Stats.getCardsMidGame();
+		}
+	}
+	
+	public ArrayList<String> getPlayerCardsGainedLateGame(boolean winningPlayer){
+		if(winner == 0) {
+			if(winningPlayer) {
+				return p1Stats.getCardsLateGame();
+			}
+			return p2Stats.getCardsLateGame();
+		}else{
+			if(winningPlayer) {
+				return p2Stats.getCardsLateGame();
+			}
+			return p1Stats.getCardsLateGame();
+		}
+	}
 }

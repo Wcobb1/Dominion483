@@ -51,6 +51,14 @@ public class Kingdom {
 		return supply.get(index).getName();
 	}
 	
+	public boolean canBuy(String name) {
+		int index = kingdomIndex(name);
+		if(supply.get(index).getCardsRemaining() > 0) {
+			return true;
+		}
+		return false;
+	}
+	
 	//decrement card count(given name)
 	public void cardRemoved(String name) {
 		int index = kingdomIndex(name);

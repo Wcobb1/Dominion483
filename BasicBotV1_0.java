@@ -101,17 +101,19 @@ public class BasicBotV1_0 extends Player {
 	@Override
 	protected void resolveBuyPhase() {
 		
-		ArrayList<Card> mostExpensiveChoices = highestCostList(coins);
-		
-		if(mostExpensiveChoices.size() > 0) {
-			Random rand = new Random();
-			int choice = rand.nextInt(mostExpensiveChoices.size());
-			//buy random card from mostExpensiveChoices
-			buyCard(mostExpensiveChoices.get(choice).getName());
+		if(buys > 0) {
+			ArrayList<Card> mostExpensiveChoices = highestCostList(coins);
 			
-			//if there is still at least 1 buy and at least 2 coins, recurse
-			if(buys > 0 && coins > 1) {
-				resolveBuyPhase();
+			if(mostExpensiveChoices.size() > 0) {
+				Random rand = new Random();
+				int choice = rand.nextInt(mostExpensiveChoices.size());
+				//buy random card from mostExpensiveChoices
+				buyCard(mostExpensiveChoices.get(choice).getName());
+				
+				//if there is still at least 1 buy and at least 2 coins, recurse
+				if(buys > 0 && coins > 1) {
+					resolveBuyPhase();
+				}
 			}
 		}
 	}

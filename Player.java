@@ -18,34 +18,9 @@ public abstract class Player {
 	protected String turnLog;
 	protected PlayerCommunication pc;
 	protected int cardsPlayedThisTurn;
-	//Used for statistics at game end: 1 = in deck, 0 = not in deck
-	private int[] cardsOwned = {
-		//Province
-		0,
-		//Duchy
-		0,
-		//Estate
-		0,
-		//Copper
-		0,
-		//Silver
-		0,
-		//Gold
-		0,
-		//Curse
-		0,
-		//Kingdom Cards
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0
-	};
+	//used for stats
+	protected int turnNumber = 0;
+	protected PlayerStats ps = new PlayerStats();
 	
 	//constructor
 	public Player(Kingdom k, PlayerCommunication pc) {
@@ -118,6 +93,10 @@ public abstract class Player {
 		turnLog = "";
 		cardsPlayedThisTurn = 0;
 		
+		//stats
+		turnNumber ++;
+		
+		//for game log
 		turnLog += "Cards Played: ";
 		
 		//Play phase
@@ -125,6 +104,7 @@ public abstract class Player {
 		resolveActionPhase();
 		playTreasures();
 		
+		//for game log
 		turnLog += "\nCards Gained: ";
 		
 		//Buy phase
@@ -151,6 +131,20 @@ public abstract class Player {
 		}
 		
 		while(cardsGained.size() > 0) {
+			//for stats/analysis/training
+			if(turnNumber < 3) {
+				for(Card c:cardsGained) {
+					ps.addCardFirstTwoTurns(c);
+				}
+			}else if(turnNumber < 14) {
+				for(Card c:cardsGained) {
+					ps.addCardMidGame(c);
+				}
+			}else {
+				for(Card c:cardsGained) {
+					ps.addCardLateGame(c);
+				}
+			}
 			Card c = cardsGained.get(0);
 			turnLog += c.getName() + ", ";
 			deck.addCardToDiscard(c);
@@ -205,11 +199,13 @@ public abstract class Player {
 	
 	//add card to cardsGained ArrayList<Card> and update corresponding card's SupplyPile object in kingdom
 	public void buyCard(String cardName) {
-		Card newCard = new Card(cardName);
-		cardsGained.add(newCard);
-		kingdom.cardRemoved(cardName);
-		buys --;
-		coins -= newCard.getCost();
+		if(kingdom.canBuy(cardName)) {
+			Card newCard = new Card(cardName);
+			cardsGained.add(newCard);
+			kingdom.cardRemoved(cardName);
+			buys --;
+			coins -= newCard.getCost();
+		}
 	}
 	
 	//same as buyCard, but does not deal with buys or coins
@@ -469,6 +465,10 @@ public abstract class Player {
 		return turnLog;
 	}
 	
+	public PlayerCommunication getPlayerCommunication() {
+		return pc;
+	}
+	
 	public int getNumCardsPlayed() {
 		return cardsPlayedThisTurn;
 	}
@@ -498,21 +498,21 @@ public abstract class Player {
 		
 		//count hand
 		for(Card c: hand.getHand()) {
-			cardsOwned[kingdom.kingdomIndex(c.getName())] ++;
+			ps.addCardOwned(kingdom.kingdomIndex(c.getName()));
 			if(c.isCardType(CardType.VICTORY) || c.isCardType(CardType.CURSE)) {
 				victoryPoints += scoreCard(c.getName(), totalCards);
 			}
 		}
 		//count deck
 		for(Card c: deck.getDeck()) {
-			cardsOwned[kingdom.kingdomIndex(c.getName())] ++;
+			ps.addCardOwned(kingdom.kingdomIndex(c.getName()));
 			if(c.isCardType(CardType.VICTORY) || c.isCardType(CardType.CURSE)) {
 				victoryPoints += scoreCard(c.getName(), totalCards);
 			}
 		}
 		//count discard
 		for(Card c: deck.getDiscard()) {
-			cardsOwned[kingdom.kingdomIndex(c.getName())] ++;
+			ps.addCardOwned(kingdom.kingdomIndex(c.getName()));
 			if(c.isCardType(CardType.VICTORY) || c.isCardType(CardType.CURSE)) {
 				victoryPoints += scoreCard(c.getName(), totalCards);
 			}
@@ -520,8 +520,8 @@ public abstract class Player {
 		return victoryPoints;
 	}
 	
-	public int[] getCardsOwned() {
-		return cardsOwned;
+	public PlayerStats getPlayerStats() {
+		return ps;
 	}
 	
 }
