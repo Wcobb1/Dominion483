@@ -199,11 +199,13 @@ public abstract class Player {
 	
 	//add card to cardsGained ArrayList<Card> and update corresponding card's SupplyPile object in kingdom
 	public void buyCard(String cardName) {
-		Card newCard = new Card(cardName);
-		cardsGained.add(newCard);
-		kingdom.cardRemoved(cardName);
-		buys --;
-		coins -= newCard.getCost();
+		if(kingdom.canBuy(cardName)) {
+			Card newCard = new Card(cardName);
+			cardsGained.add(newCard);
+			kingdom.cardRemoved(cardName);
+			buys --;
+			coins -= newCard.getCost();
+		}
 	}
 	
 	//same as buyCard, but does not deal with buys or coins
