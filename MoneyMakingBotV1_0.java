@@ -14,18 +14,45 @@ import dominionAgents.CardData.CardType;
 
 public class MoneyMakingBotV1_0 extends BasicBotV1_0{
     
+
+    ArrayList<Pair<Card,Double>> wantedCards; 
+      
     boolean treasureInSupply = false;
     int actionNum = 0;   
     public MoneyMakingBotV1_0(Kingdom k, PlayerCommunication pc) {
 		super(k, pc);
+        ratioCalc();
 
-        
     }
 
+
+    protected void ratioCalc(){
+        int ratio =0;
+		
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		for(SupplyPile sp: supply) {
+			
+            Card c = sp.getCard();
+			if(c.isCardType(CardType.ACTION) && c.getBuysAdded() + c.getActionsAdded() + c.getCardsAdded() > 0) {
+                //System.out.print(c.getName()+"\n");
+                
+
+			}
+		}
+
+
+    }
 
     protected void resolveBuyPhase() {
         
 
+        
+
+
+        while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you want
+           buyCard("Province");
+        }
+        
         String cardToBuy = cheapestBuy();
         if(coins < 8 && cardToBuy != null && actionNum > 5){
             buyCard(cardToBuy);
@@ -33,10 +60,6 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         }
 
 
-        while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you want
-           buyCard("Province");
-        }
-            
         super.resolveBuyPhase();
 
         
@@ -45,17 +68,6 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
 
     	String s = null;
         
-		
-		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
-		for(SupplyPile sp: supply) {
-			
-            Card c = sp.getCard();
-			if(supply.isCardType(CardType.ACTION)) {
-                System.out.print(c.getName());
-                
-
-			}
-		}
 
 
 
