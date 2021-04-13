@@ -43,7 +43,7 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
 
     	String s = null;
         ArrayList<SupplyPile> cardsInPlay = getSupplyPiles();
-        for(int i =0; i < cardsInPlay.legnth(); i++){
+        for(int i =0; i < cardsInPlay.legnth; i++){
             System.out.println(i);
         }
 
