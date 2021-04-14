@@ -43,10 +43,10 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
             buyCard(cardToBuy);
             actionNum += 1;
         }
-        while(kingdom.canBuy("Gold") && coins <= 6) { // while you can buy golds
+        while(kingdom.canBuy("Gold") && coins >= 6) { // while you can buy golds
             buyCard("Gold");
         }
-        while(kingdom.canBuy("Silver") && coins <= 3){ // if you cant buy golds buy silvers
+        while(kingdom.canBuy("Silver") && coins >= 3){ // if you cant buy golds buy silvers
             buyCard("Silver");
         }
 
