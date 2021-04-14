@@ -215,17 +215,20 @@ public class CardData {
 	}
 	
 
-	public static ArrayList<Pair<Integer,Float>> ratioCalc(){
+	public static ArrayList<Float> ratioCalc(){
         
-		ArrayList<Pair<Integer,Float>> wantedCards = new ArrayList<>(); 
+		ArrayList<Float> wantedCards = new ArrayList<>(); 
 		float ratio = 0;
 		int i =0;
-		for(int[][][] cp: cardValues ) {
-			int[] cA = cp[i][1];
-			ratio = (cA[0] + cA[1] + cA[2] + cA[3])/cp[i][2][0];
-			wantedCards.add(new Pair<Integer,Float>(i,ratio));
-			System.out.print(wantedCards+"\n");
-			i ++;
+		for(int[][] cp: cardValues ) {
+			int[] cA = cp[1]; 
+			if(cp[2][0] > 0){
+				ratio = (float)(cA[0] + cA[1] + cA[2] + cA[3])/(float)cp[2][0];
+			}
+			wantedCards.add(ratio);
+			
+			//System.out.print(wantedCards.get(i)+"\n");
+			i += 1;
 		}
 		return wantedCards;
 	}

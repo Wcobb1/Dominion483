@@ -33,21 +33,22 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
 
     protected void resolveBuyPhase() {
         
-
-        
-
-
-        while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you want
+        while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you can
            buyCard("Province");
         }
         
         String cardToBuy = bestBuy();
-        if(coins < 8 && cardToBuy != null && actionNum < 5){
-            System.out.print("buying "+cardToBuy+"\n");
+        if(coins < 8 && cardToBuy != null && actionNum < 20){
+            //System.out.print("buying "+cardToBuy+"\n");
             buyCard(cardToBuy);
             actionNum += 1;
         }
-
+        while(kingdom.canBuy("Gold") && coins <= 6) { // while you can buy golds
+            buyCard("Gold");
+        }
+        while(kingdom.canBuy("Silver") && coins <= 3){ // if you cant buy golds buy silvers
+            buyCard("Silver");
+        }
 
         super.resolveBuyPhase();
 
@@ -62,13 +63,17 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         int i = 0;
         
         for(SupplyPile sp: supply){
+            
+            
+            
             Card currCard = sp.getCard();
             i = kingdom.kingdomIndex(currCard.getName());
             if(currCard.isCardType(CardData.CardType.ACTION)){
                 
+                //System.out.print(currCard.getName() + " : " + ratioList.get(i) + "\n"); 
+                
                 if(max < ratioList.get(i)){
                     max = ratioList.get(i);
-                    System.out.print(max + "\n");
                     s = currCard.getName();
                 }
             }
