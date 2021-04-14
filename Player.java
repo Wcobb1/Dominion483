@@ -201,10 +201,12 @@ public abstract class Player {
 	public void buyCard(String cardName) {
 		if(kingdom.canBuy(cardName)) {
 			Card newCard = new Card(cardName);
-			cardsGained.add(newCard);
-			kingdom.cardRemoved(cardName);
-			buys --;
-			coins -= newCard.getCost();
+			if(coins >= newCard.getCost()) {
+				cardsGained.add(newCard);
+				kingdom.cardRemoved(cardName);
+				buys --;
+				coins -= newCard.getCost();
+			}
 		}
 	}
 	
