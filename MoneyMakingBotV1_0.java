@@ -13,6 +13,17 @@ import dominionAgents.CardData.CardType;
 
 // V0: very similar to attackBot when we get a chance we can flush this out more
 
+
+
+/*TO DO
+    Need to fix the ratio value to give different 
+
+
+
+
+
+
+*/
 public class MoneyMakingBotV1_0 extends BasicBotV1_0{
     
 
@@ -26,11 +37,6 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         
 
     }
-
-
-    
-    
-
     protected void resolveBuyPhase() {
         
         while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you can
@@ -43,10 +49,10 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
             buyCard(cardToBuy);
             actionNum += 1;
         }
-        while(kingdom.canBuy("Gold") && coins <= 6) { // while you can buy golds
+        while(kingdom.canBuy("Gold") && coins >= 6) { // while you can buy golds
             buyCard("Gold");
         }
-        while(kingdom.canBuy("Silver") && coins <= 3){ // if you cant buy golds buy silvers
+        while(kingdom.canBuy("Silver") && coins >= 3){ // if you cant buy golds buy silvers
             buyCard("Silver");
         }
 
