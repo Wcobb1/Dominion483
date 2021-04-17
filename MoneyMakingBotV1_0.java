@@ -45,7 +45,7 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         
         String cardToBuy = bestBuy();
         if(coins < 8 && cardToBuy != null && actionNum < 20){
-            //System.out.print("buying "+cardToBuy+"\n");
+            System.out.print("buying "+cardToBuy+ " with " + coins + " coins left\n");
             buyCard(cardToBuy);
             actionNum += 1;
         }

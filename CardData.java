@@ -224,7 +224,8 @@ public class CardData {
 		for(int[][] cp: cardValues ) {
 			int[] cA = cp[1]; 
 			if(cp[2][0] > 0){
-				ratio = (float)((cA[0] * 3) + (cA[1]*2) + (cA[2] * 4) + (cA[3] * 3))/(float)cp[2][0];
+				//{actions, cards, coins, buys, customBoolean}
+				ratio = (float)((cA[0] * 1) + (cA[1]*4) + (cA[2] * 5) + (cA[3] * 3))/(float)cp[2][0];
 			}
 			wantedCards.add(ratio);
 			
