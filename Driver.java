@@ -19,11 +19,11 @@ public class Driver {
 			Kingdom kingdom = new Kingdom();
 			PlayerCommunication pc = new PlayerCommunication();
 			//Set player types
-			//Player p1 = new BasicBotV1_0(kingdom, pc);
+			Player p1 = new BasicBotV1_0(kingdom, pc);
 			//Player p2 = new DecisionTreePlayerV1_0(kingdom, pc, trainer.getEarlyPrioList(), trainer.getMidPrioList(), trainer.getLatePrioList());
-			//Player p1 = new AttackBotV1_0(kingdom, pc);
-			Player p1 = new MoneyMakingBotV1_0(kingdom, pc);
-			Player p2 = new RushBotV1_0(kingdom, pc);
+			//Player p2 = new AttackBotV1_0(kingdom, pc);
+			Player p2 = new MoneyMakingBotV1_0(kingdom, pc);
+			//Player p2 = new RushBotV1_0(kingdom, pc);
 			
 			GameSimulator gs = new GameSimulator(p1, p2);
 			int result = gs.runGame();

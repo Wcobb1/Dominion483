@@ -31,7 +31,7 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
       
     boolean treasureInSupply = false;
     int actionNum = 0;   
-    ArrayList<Float> ratioList = CardData.ratioCalc();
+    ArrayList<Float> ratioList = CardData.preferedCardM();
     public MoneyMakingBotV1_0(Kingdom k, PlayerCommunication pc) {
 		super(k, pc);
         
