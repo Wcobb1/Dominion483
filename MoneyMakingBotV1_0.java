@@ -32,12 +32,14 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
     boolean treasureInSupply = false;
     int actionNum = 0;   
     ArrayList<Float> ratioList = CardData.preferedCardM();
-    ArrayList<String> cardsBought = new ArrayList<String>();
+    ArrayList<Integer> cardsBought = new ArrayList<Integer>();
     
 
     public MoneyMakingBotV1_0(Kingdom k, PlayerCommunication pc) {
 		super(k, pc);
-        
+        for(int i = 0;i < 17;i++){ 
+            cardsBought.add(0);
+        }
 
     }
     protected void resolveBuyPhase() {
@@ -47,11 +49,15 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         }
         
         String cardToBuy = bestBuy();
-        if(coins < 8 && cardToBuy != null && actionNum < 5){
-            cardsBought.add(cardToBuy);
-
+        
+        int index = kingdom.kingdomIndex(cardToBuy);
+        
+        
+        if(coins < 8 && cardToBuy != null && actionNum < 20){
             System.out.print("buying "+cardToBuy+ " with " + coins + " coins left\n");
             buyCard(cardToBuy);
+            Integer addHere = cardsBought.get(index);
+            addHere ++;
             actionNum += 1;
         }
         while(kingdom.canBuy("Gold") && coins >= 6) { // while you can buy golds
@@ -72,13 +78,8 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         Float max = (float)0;
         
         int i = 0;
-        int amountOfCard = 0;
+        
 
-        if(cardsBought.size() > 0 && cardsBought != null){
-            
-            String currentCard = cardsBought.get(0);
-            //System.out.print("The current card is " + currentCard + "\n");
-        }
        
 
 
@@ -92,31 +93,19 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
                 
                 //System.out.print(currCard.getName() + " : " + ratioList.get(i) + "\n"); 
                 
-                if(cardsBought.size() > 0 && cardsBought != null){
-                  
-                    for(int a =0;a < cardsBought.size();a++){
-                    
-                        if(currCard.equals(cardsBought.get(a)) ){
-                              //System.out.print("here\n");
-                            amountOfCard += 1;
-                        }
-                    }
-                    //System.out.print(amountOfCard);
-                    if(amountOfCard == 3){
-                        System.out.print("You've bought three of these cards");
-                    }
-
-                }
-                
-
-
+                int index = kingdom.kingdomIndex(currCard.getName());
+              
                 if(max < ratioList.get(i)){
-                    max = ratioList.get(i);
-                    s = currCard.getName();
+                    if(cardsBought.get(index) < 3 && index != 0){
+                        max = ratioList.get(i);
+                        s = currCard.getName();
+
+                    }
+                    
+                        
                 }
-            
                 
-            
+               
             
             
             }
