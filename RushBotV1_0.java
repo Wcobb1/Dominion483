@@ -7,6 +7,74 @@ import dominionAgents.PlayerCommunication.PlayerCode;
 
 public class RushBotV1_0 extends Player{
 	
+	//lower value = higher priority
+	public int[] cardPriorities = {
+//			"PROVINCE",
+			0,
+//			"DUCHY",
+			9,
+//			"ESTATE",
+			8,
+//			"GOLD",
+			11,
+//			"SILVER",
+			10,
+//			"COPPER",
+			13,
+//			"WITCH",
+			15,
+//			"MINE",
+			15,
+//			"MARKET",
+			3,
+//			"LIBRARY",
+			15,
+//			"LABRATORY",
+			15,
+//			"FESTIVAL",
+			12,
+//			"CURSE",
+			25,
+//			"COUNCIL ROOM",
+			15,
+//			"THRONE ROOM",
+			15,
+//			"SMITHY",
+			15,
+//			"REMODEL",
+			15,
+//			"MONEYLENDER",
+			15,
+//			"MILITIA",
+			15,
+//			"GARDENS",
+			1,
+//			"BUREAUCRAT",
+			15,
+//			"WORKSHOP",
+			2,
+//			"VILLAGE",
+			5,
+//			"MOAT",
+			7,
+//			"CHAPEL",
+			15,
+//			"CELLAR",
+			4,
+//			"FEAST",
+			15,
+//			"CHANCELLOR",
+			15,
+//			"WOODCUTTER",
+			6,
+//			"ADVENTURER",
+			15,
+//			"SPY",
+			15,
+//			"THIEF"
+			15
+		};
+	
 	public RushBotV1_0(Kingdom k, PlayerCommunication pc) {
 		super(k, pc);
 	}
@@ -65,7 +133,6 @@ public class RushBotV1_0 extends Player{
 				playPhaseAlgorithm1();
 			}
 		}
-		
 	}
 
 	public void playBuyAdders() {
@@ -88,99 +155,25 @@ public class RushBotV1_0 extends Player{
 		
 	}
 	
-	/**
 	@Override
 	protected void resolveBuyPhase() {
 		
 		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
-		ArrayList<Card> idealChoices = new ArrayList<Card>();
-		for(SupplyPile sp: supply) {
-			Card c = sp.getCard();
-			if(c.getCost() < coins) {
-				if(c.getName().equalsIgnoreCase("ESTATE")) {
-					idealChoices.add(c);
-				}else if(c.getName().equalsIgnoreCase("COPPER")) {
-					idealChoices.add(c);
-				}else if(sp.getCardsRemaining() < 3){
-					idealChoices.add(c);
-				}else if(c.getName().equalsIgnoreCase("WOODCUTTER")) {
-					idealChoices.add(c);
-				}else if(c.getName().equalsIgnoreCase("WORKSHOP")) {
-					idealChoices.add(c);
-				}else if(c.getName().equalsIgnoreCase("GARDENS")) {
-					idealChoices.add(c);
-				}
+		int lowest = 16;
+		String cardChosen = null;
+		for(SupplyPile sp:supply) {
+			int index = CardData.getCardNumber(sp.getCard().getName());
+			if(cardPriorities[index] < lowest && kingdom.canBuy(sp.getCard().getName()) && sp.getCard().getCost() < coins) {
+				cardChosen = sp.getCard().getName();
+				lowest = cardPriorities[index];
 			}
 		}
-		
-		//buy highest priority card from idealChoices if possible
-		if(idealChoices.size() > 0) {
-			
-			buyCard(idealChoices.get(0).getName());
-			//if there is still at least 1 buy, recurse
+		if(cardChosen != null) {
+			buyCard(cardChosen);
 			if(buys > 0) {
 				resolveBuyPhase();
 			}
-		}else {
-			//otherwise buy most expensive card possible
-			ArrayList<Card> otherChoices = highestCostList(coins);
-			if(otherChoices.size() > 0) {
-				buyCard(otherChoices.get(0).getName());
-				//if there is still at least 1 buy, recurse
-				if(buys > 0) {
-					resolveBuyPhase();
-				}
-			}
-			
 		}
-
-	}
-
-	**/
-	@Override
-	protected void resolveBuyPhase() {
-		
-		ArrayList<Card> mostExpensiveChoices = highestCostList(coins);
-		
-		if(mostExpensiveChoices.size() > 0) {
-			Random rand = new Random();
-			int choice = rand.nextInt(mostExpensiveChoices.size());
-			//buy random card from mostExpensiveChoices
-			buyCard(mostExpensiveChoices.get(choice).getName());
-			
-			//if there is still at least 1 buy and at least 2 coins, recurse
-			if(buys > 0 && coins > 1) {
-				resolveBuyPhase();
-			}
-		}
-	}
-
-	private ArrayList<Card> highestCostList(int cost){
-		int highestPossible = 0;
-		
-		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
-		ArrayList<Card> choices = new ArrayList<Card>();
-		for(SupplyPile sp: supply) {
-			Card c = sp.getCard();
-			if(c.getCost() <= cost && sp.getCardsRemaining() > 0 && !c.getName().equalsIgnoreCase("CURSE")  && !c.getName().equalsIgnoreCase("CHAPEL")) {
-				choices.add(c);
-				if(c.getCost() > highestPossible) {
-					highestPossible = c.getCost();
-				}
-			}
-		}
-		
-		ArrayList<Card> mostExpensiveChoices = new ArrayList<Card>();
-		
-		if(choices.size() > 0) {
-			for(Card c: choices) {
-				if(c.getCost() == highestPossible) {
-					mostExpensiveChoices.add(c);
-				}
-			}
-		}
-		
-		return mostExpensiveChoices;
 	}
 	
 	//Super primitive: just discards randomly
@@ -221,21 +214,35 @@ public class RushBotV1_0 extends Player{
 
 	@Override
 	public void resolveWorkshop() {
-		ArrayList<Card> bestChoices = highestCostList(4);
-		if(bestChoices.size() > 0) {
-			Random rand = new Random();
-			int choice = rand.nextInt(bestChoices.size());
-			gainCard(bestChoices.get(choice).getName());
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		int lowest = 16;
+		String cardChosen = null;
+		for(SupplyPile sp:supply) {
+			int index = CardData.getCardNumber(sp.getCard().getName());
+			if(cardPriorities[index] < lowest) {
+				cardChosen = sp.getCard().getName();
+				lowest = cardPriorities[index];
+			}
+		}
+		if(cardChosen != null) {
+			gainCard(cardChosen);
 		}
 	}
 	
 	@Override
 	public void resolveFeast() {
-		ArrayList<Card> bestChoices = highestCostList(5);
-		if(bestChoices.size() > 0) {
-			Random rand = new Random();
-			int choice = rand.nextInt(bestChoices.size());
-			gainCard(bestChoices.get(choice).getName());
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		int lowest = 16;
+		String cardChosen = null;
+		for(SupplyPile sp:supply) {
+			int index = CardData.getCardNumber(sp.getCard().getName());
+			if(cardPriorities[index] < lowest) {
+				cardChosen = sp.getCard().getName();
+				lowest = cardPriorities[index];
+			}
+		}
+		if(cardChosen != null) {
+			gainCard(cardChosen);
 		}
 	}
 
@@ -345,6 +352,34 @@ public class RushBotV1_0 extends Player{
 		return null;
 	}
 
+	private ArrayList<Card> highestCostList(int cost){
+		int highestPossible = 0;
+		
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		ArrayList<Card> choices = new ArrayList<Card>();
+		for(SupplyPile sp: supply) {
+			Card c = sp.getCard();
+			if(c.getCost() <= cost && sp.getCardsRemaining() > 0 && !c.getName().equalsIgnoreCase("CURSE")) {
+				choices.add(c);
+				if(c.getCost() > highestPossible) {
+					highestPossible = c.getCost();
+				}
+			}
+		}
+		
+		ArrayList<Card> mostExpensiveChoices = new ArrayList<Card>();
+		
+		if(choices.size() > 0) {
+			for(Card c: choices) {
+				if(c.getCost() == highestPossible) {
+					mostExpensiveChoices.add(c);
+				}
+			}
+		}
+		
+		return mostExpensiveChoices;
+	}
+	
 	@Override
 	public void resolveRemodel() {
 		//can't trash if there are 0 cards in hand
