@@ -32,6 +32,11 @@ public class Kingdom {
 		
 	}
 	
+	public Kingdom(Kingdom k){
+		this.trash = new ArrayList<Card>(k.trash);
+		this.supply = new ArrayList<SupplyPile>(k.getSupplyPiles());
+	}
+
 	//return number of empty supply piles
 	public int emptySupplyPiles() {
 		return emptySupplyPiles;
