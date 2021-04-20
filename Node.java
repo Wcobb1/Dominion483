@@ -5,15 +5,16 @@ import java.util.ArrayList;
 public class Node {
     
     public Node(){
-        this.c = new Card("NA");
+        this.cardName = "NA";
         this.visited = 0;
         this.wins = (double)0;
         this.uctVal = Double.NEGATIVE_INFINITY;
         this.childArray = null;
     }
 
-    public Node(Card c){
-        this.c = c;
+    public Node(String cardName){
+        this.c = new Card(cardName);
+        this.cardName = cardName;
         this.parent = null;
         this.visited = 0;
         this.wins = 0;
@@ -69,8 +70,17 @@ public class Node {
         this.childArray = children;
     }
 
+    public String getCardName(){
+        return this.cardName;
+    }
+
+    public void setCardName(String cardName){
+        this.cardName = cardName;
+    }
+
     private Card c;
     private Node parent;
+    private String cardName;
     //private int parentVisits;
     private ArrayList<Node> childArray;
     private int visited;

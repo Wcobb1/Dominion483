@@ -7,11 +7,11 @@ import java.util.Random;
 import dominionAgents.PlayerCommunication.PlayerCode;
 
 public class BasicBotV1_0_2 extends Player {
-	protected Card giveCard;
-
-	public BasicBotV1_0_2(Kingdom k, PlayerCommunication pc, Card c) {
+	protected String firstCard;
+	
+	public BasicBotV1_0_2(Kingdom k, PlayerCommunication pc, String c) {
 		super(k, pc);
-		this.giveCard = c;
+		this.firstCard = c;
 	}
 	
 	protected Card getGiveCard(){
@@ -111,26 +111,33 @@ public class BasicBotV1_0_2 extends Player {
 	//Google Drawing of this algorithm: https://docs.google.com/drawings/d/1vjC6Dd4vrZFLf848YE90ssPsTT5bSQL_mGbvids2aPs/edit?usp=sharing
 	@Override
 	protected void resolveBuyPhase() {	
-		if(buys > 0) {
-			if (turnNumber <= 1){
-				buyCard(giveCard.getName());
-			}
-			else {
-				ArrayList<Card> mostExpensiveChoices = highestCostList(coins);
-				
-				if(mostExpensiveChoices.size() > 0) {
-					Random rand = new Random();
-					int choice = rand.nextInt(mostExpensiveChoices.size());
-					//buy random card from mostExpensiveChoices
-					buyCard(mostExpensiveChoices.get(choice).getName());
+		if (turnNumber <= 1 && !firstCard.equalsIgnoreCase("NA") && buys > 0){
+			buyCard(firstCard);
+			firstCard = "";
+		}
 					
-					//if there is still at least 1 buy and at least 2 coins, recurse
-					if(buys > 0 && coins > 1) {
-						resolveBuyPhase();
-					}
-				}
+		if(buys > 0) {
+			// Random Buys
+			ArrayList<Card> choices = affordableCardsList(coins);
+			if (choices.size() > 0){
+				Random rand = new Random();
+				int choice = rand.nextInt(choices.size());
+				//buy random card from mostExpensiveChoices
+				buyCard(choices.get(choice).getName());
+			}			
+		}
+	}
+
+	private ArrayList<Card> affordableCardsList(int cost){
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		ArrayList<Card> choices = new ArrayList<Card>();
+		for(SupplyPile sp: supply) {
+			Card c = sp.getCard();
+			if(c.getCost() <= coins && sp.getCardsRemaining() > 0) {
+				choices.add(c);
 			}
 		}
+		return choices;
 	}
 
 	private ArrayList<Card> highestCostList(int cost){
