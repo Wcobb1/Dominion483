@@ -49,15 +49,13 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         }
         
         String cardToBuy = bestBuy();
+        if(coins < 8 && cardToBuy != null && actionNum < 1){
+            int index = kingdom.kingdomIndex(cardToBuy);
         
-        int index = kingdom.kingdomIndex(cardToBuy);
-        
-        
-        if(coins < 8 && cardToBuy != null && actionNum < 20){
-            System.out.print("buying "+cardToBuy+ " with " + coins + " coins left\n");
+            //System.out.print("buying "+cardToBuy+ " with " + coins + " coins left\n");
             buyCard(cardToBuy);
-            Integer addHere = cardsBought.get(index);
-            addHere ++;
+            cardsBought.set(index,cardsBought.get(index) + 1) ;
+            
             actionNum += 1;
         }
         while(kingdom.canBuy("Gold") && coins >= 6) { // while you can buy golds
@@ -78,14 +76,7 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         Float max = (float)0;
         
         int i = 0;
-        
-
-       
-
-
         for(SupplyPile sp: supply){
-            
-            
             
             Card currCard = sp.getCard();
             i = kingdom.kingdomIndex(currCard.getName());
@@ -102,12 +93,8 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
 
                     }
                     
-                        
                 }
                 
-               
-            
-            
             }
             
         }

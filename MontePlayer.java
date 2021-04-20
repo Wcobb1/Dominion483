@@ -25,7 +25,7 @@ public class MontePlayer extends BasicBotV1_0 {
         }
 
         // Run a number of games with the kingdom state and the card Node with highest UCT Value
-        int times = 50;
+        int times = 25;
         for (int i = 0; i < times; i++){
             Node n = getHighestUCTChildNode(cards);
             playGames(n, kingdom, pc, parentCount);
@@ -39,7 +39,7 @@ public class MontePlayer extends BasicBotV1_0 {
                 c = i.getCard();
             }
         }
-        System.out.println(parentCount);
+        //System.out.println(parentCount);
 
         return c;
     }
@@ -57,7 +57,7 @@ public class MontePlayer extends BasicBotV1_0 {
     }
 
     public void playGames(Node n, Kingdom k, PlayerCommunication pc, AtomicReference<Integer> parentCount){
-        int games = 50;
+        int games = 5;
 
         for(int i = 0; i < games; i++){
             Kingdom newK = new Kingdom(k);
@@ -75,15 +75,15 @@ public class MontePlayer extends BasicBotV1_0 {
     public void updateUCT(ArrayList<Node> cards, AtomicReference<Integer> parentCount){
         for (Node n : cards){
             double uct = 0;
-            uct = n.getNodewins() + (constant * (Math.sqrt(Math.log(parentCount.get() / n.getNodeVisits()))));
+            uct = n.getNodewins() + (constant * (Math.sqrt(Math.log(parentCount.get()) / n.getNodeVisits())));
             n.setUCTVal(uct);    
-            System.out.print("UCT Values of Node with card ", n.getCard().getName(), " = ", n.getUCTVal());
+            //System.out.print("UCT Values of Node with card ", n.getCard().getName(), " = ", n.getUCTVal());
         }
     }   
 
     public void resolveBuyPhase(){
         Card cardBuy = getBestPossibleCard();
-        System.out.println(cardBuy.getName());
+        //System.out.println(cardBuy.getName());
         buyCard(cardBuy.getName());            
     }
 
