@@ -12,6 +12,10 @@ public class PlayerCommunication {
 		players = new ArrayList<Player>();
 	}
 	
+	public PlayerCommunication(PlayerCommunication pc){
+		this.players = new ArrayList<Player>(pc.players);
+	}
+
 	public PlayerCommunication(Player p1, Player p2) {
 		players = new ArrayList<Player>();
 		players.add(p1);

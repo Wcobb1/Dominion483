@@ -8,18 +8,26 @@ import dominionAgents.PlayerCommunication.PlayerCode;
 
 public class BasicBotV1_0_2 extends Player {
 	protected String firstCard;
+	protected boolean firstCardBuy;
 	
+	public BasicBotV1_0_2(Kingdom k, PlayerCommunication pc){
+		super(k, pc);
+		this.firstCard = "N";
+		this.firstCardBuy = false;
+	}
+
 	public BasicBotV1_0_2(Kingdom k, PlayerCommunication pc, String c) {
 		super(k, pc);
 		this.firstCard = c;
+		this.firstCardBuy = true;
 	}
 	
-	protected Card getGiveCard(){
-		return this.giveCard;
+	protected String getCardName(){
+		return this.firstCard;
 	}
 
-	protected void setGiveCard(Card giveCard){
-		this.giveCard = giveCard;
+	protected void setGiveCard(String cardName){
+		this.firstCard = cardName;
 	}
 
 	@Override
@@ -111,21 +119,47 @@ public class BasicBotV1_0_2 extends Player {
 	//Google Drawing of this algorithm: https://docs.google.com/drawings/d/1vjC6Dd4vrZFLf848YE90ssPsTT5bSQL_mGbvids2aPs/edit?usp=sharing
 	@Override
 	protected void resolveBuyPhase() {	
-		if (turnNumber <= 1 && !firstCard.equalsIgnoreCase("NA") && buys > 0){
-			buyCard(firstCard);
-			firstCard = "";
-		}
-					
-		if(buys > 0) {
+	if (buys > 0){
 			// Random Buys
-			ArrayList<Card> choices = affordableCardsList(coins);
+			ArrayList<String> choices = getaffordableCardsList(coins);
 			if (choices.size() > 0){
 				Random rand = new Random();
 				int choice = rand.nextInt(choices.size());
 				//buy random card from mostExpensiveChoices
-				buyCard(choices.get(choice).getName());
-			}			
+				// If 
+				if (turnNumber <= 1 && firstCardBuy == true){
+					if (!this.firstCard.equalsIgnoreCase("NA")){
+						if (choices.contains(firstCard)){
+							buyCard(firstCard);
+							firstCard = "NA";
+							firstCardBuy = false;
+						}
+						else {
+							buyCard(choices.get(choice));
+						}
+					}	
+				}
+				else {
+					buyCard(choices.get(choice));
+				}
+				if (buys > 0 && coins > 1 && !(turnNumber <= 1 && this.firstCard.equalsIgnoreCase("NA"))){
+					//	System.out.println(buys + " : " + coins);
+					resolveBuyPhase();
+				}
+			}
 		}
+	}
+	
+	private ArrayList<String> getaffordableCardsList(int cost){
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		ArrayList<String> choices = new ArrayList<String>();
+		for(SupplyPile sp: supply) {
+			Card c = sp.getCard();
+			if(c.getCost() <= coins && sp.getCardsRemaining() > 0) {
+				choices.add(c.getName());
+			}
+		}
+		return choices;
 	}
 
 	private ArrayList<Card> affordableCardsList(int cost){
@@ -167,7 +201,35 @@ public class BasicBotV1_0_2 extends Player {
 		
 		return mostExpensiveChoices;
 	}
-	
+
+	private ArrayList<String> StringhighestCostList(int cost){
+		int highestPossible = 0;
+		
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		ArrayList<Card> choices = new ArrayList<Card>();
+		for(SupplyPile sp: supply) {
+			Card c = sp.getCard();
+			if(c.getCost() <= cost && sp.getCardsRemaining() > 0 && !c.getName().equalsIgnoreCase("CURSE")) {
+				choices.add(c);
+				if(c.getCost() > highestPossible) {
+					highestPossible = c.getCost();
+				}
+			}
+		}
+		
+		ArrayList<String> mostExpensiveChoices = new ArrayList<String>();
+		
+		if(choices.size() > 0) {
+			for(Card c: choices) {
+				if(c.getCost() == highestPossible) {
+					mostExpensiveChoices.add(c.getName());
+				}
+			}
+		}
+		
+		return mostExpensiveChoices;
+	}
+
 	//Super primitive: just discards randomly
 	@Override
 	public void discardDownTo(int numLeft) {
@@ -206,7 +268,7 @@ public class BasicBotV1_0_2 extends Player {
 
 	@Override
 	public void resolveWorkshop() {
-		ArrayList<Card> bestChoices = highestCostList(4);
+		ArrayList<Card> bestChoices = affordableCardsList(4);
 		if(bestChoices.size() > 0) {
 			Random rand = new Random();
 			int choice = rand.nextInt(bestChoices.size());
@@ -216,7 +278,7 @@ public class BasicBotV1_0_2 extends Player {
 	
 	@Override
 	public void resolveFeast() {
-		ArrayList<Card> bestChoices = highestCostList(5);
+		ArrayList<Card> bestChoices = affordableCardsList(5);
 		if(bestChoices.size() > 0) {
 			Random rand = new Random();
 			int choice = rand.nextInt(bestChoices.size());
@@ -342,7 +404,7 @@ public class BasicBotV1_0_2 extends Player {
 			trashCard(hand.getHand(), c);
 			
 			//gain card costing up to 2 more than the trashed card
-			ArrayList<Card> bestChoices = highestCostList(cost);
+			ArrayList<Card> bestChoices = affordableCardsList(cost+2);
 			if(bestChoices.size() > 0) {
 				choice = rand.nextInt(bestChoices.size());
 				gainCard(bestChoices.get(choice).getName());

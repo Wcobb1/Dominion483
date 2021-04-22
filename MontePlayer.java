@@ -7,7 +7,7 @@ import dominionAgents.CardData.CardType;
 
 /*
     1. Check BasicBot_V1_0_2's resolve.
-    2. Stuck in a potential "infinite" loop. So, got to fix that.
+    2. Stuck in a potential "infinite" loop. So, got to fix that, basically due to (1.).
 */
 
 public class MontePlayer extends BasicBotV1_0 {
@@ -27,34 +27,39 @@ public class MontePlayer extends BasicBotV1_0 {
                 //System.out.println("For Card " + c.getName());
                 Node n = new Node(c.getName());
                 cards.add(n);
-                for (int i = 0; i < 1; i++){
+                for (int i = 0; i < 3; i++){
                     playGame(n, kingdom, pc, parentCount);
-                    updateUCT(cards, parentCount);    
+                    updateUCT(cards, parentCount);   
+                    System.out.println("\n"); 
                 }
-                //System.out.println();
             }
         }
+        //System.out.println("\nOutside second loop 2 2\n");
         // Add NA in case, decision to not buy a card.
         Node nA = new Node();
         cards.add(nA);
-        for (int i = 0; i < 1; i++){
+        for (int i = 0; i < 3; i++){
             playGame(nA, kingdom, pc, parentCount);
             updateUCT(cards, parentCount);    
+            System.out.println("\n");
         }
-        //System.out.println();
+        //System.out.println("\nOutside Adding No Card Buy Action\n");
         // Run a number of games with the kingdom state and the card Node with highest UCT Value
-        int times = 10;
+        System.out.println("\n Playouts Now \n");
+        int times = 50;
         for (int i = 0; i < times; i++){
             Node n = getHighestUCTChildNode(cards);
-            System.out.println(n.getCardName());
+            System.out.println("Highest Node : " + n.getCardName());
             playGame(n, kingdom, pc, parentCount);
             updateUCT(cards, parentCount);
-            //System.out.println();
+            System.out.println("\n Playouts \n");
         }
         String cName = null;
+        //int highestVisits;
+
         Node bestNode = getHighestUCTChildNode(cards);
         cName = bestNode.getCardName();
-        //System.out.println("End of getBestCard()");
+        System.out.println("End of getBestCard()");
 
         return cName;
     }
@@ -74,18 +79,20 @@ public class MontePlayer extends BasicBotV1_0 {
 
     // Random Simulations with first car bought being the card in the Node (n).
     public void playGame(Node n, Kingdom k, PlayerCommunication pc, AtomicReference<Integer> parentCount){
-        //int games = 50;
         Kingdom newK = new Kingdom(k);
-        PlayerCommunication p = pc;
+        PlayerCommunication p = new PlayerCommunication(pc);
         Player ourP = new BasicBotV1_0_2(newK, p, n.getCardName());
-        Player opp = new BasicBotV1_0_2(newK, p, "NA");
+        Player opp = new BasicBotV1_0_2(newK, p);
         GameSimulator gs = new GameSimulator(ourP, opp);
         int result = gs.runGame();
-        if (result == 1){
-            n.setNodewins(n.getNodewins() + (double)result);
-        }
         if (result == 0){
-            n.setNodewins(n.getNodewins() + (double)0.5);
+            n.setNodewins(n.getNodewins() + (double)1);
+        }
+        if (result == 1){
+            n.setNodewins(n.getNodewins() + (double)-1);
+        }
+        if (result == 2){
+            n.setNodewins(n.getNodewins() - (double)0);
         }
         n.setNodeVisits(n.getNodeVisits() + 1);
         parentCount.set(parentCount.get() + 1);
@@ -108,8 +115,8 @@ public class MontePlayer extends BasicBotV1_0 {
         if (buys > 0){
             String cardBuy = "NA";
             cardBuy = getBestPossibleCard();
-            //System.out.println("\n Coins :" + coins);
-            System.out.println("Card Bought :" + cardBuy);
+            System.out.println("\n Coins :" + coins);
+            System.out.println("Card Bought :" + cardBuy + "\n");
             if(!cardBuy.equalsIgnoreCase("NA")) {
                 buyCard(cardBuy);
             }
@@ -119,7 +126,6 @@ public class MontePlayer extends BasicBotV1_0 {
         }
         super.resolveBuyPhase();
     }
-
 
     private double constant = Math.sqrt(2);
 }
