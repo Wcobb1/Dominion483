@@ -112,8 +112,8 @@ class MontePlayer extends BasicBotV1_0 {
     private void playGames(Node n, AtomicReference<Integer> pVisits){
         Kingdom k = new Kingdom(kingdom);
         PlayerCommunication playerC = new PlayerCommunication();
-        Player us = new MoneyMakingBotV1_0_2(k, playerC, n.getCardName());
-        Player opp = new MoneyMakingBotV1_0_2(k, playerC);
+        Player us = new BasicBotV1_0_2(k, playerC, n.getCardName());
+        Player opp = new BasicBotV1_0_2(k, playerC);
         GameSimulator rs = new GameSimulator(us, opp);
         int result = rs.runGame();
         int[] scores = rs.getScores();
