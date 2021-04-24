@@ -57,7 +57,7 @@ class MontePlayer extends BasicBotV1_0 {
     @Override
     protected void resolveBuyPhase() {
         if (buys > 0){
-            if(turnNumber % 10 == 0){
+            if(turnNumber % 12 == 0){
                 String c = getBestCard();
                 //System.out.println(c);
                 if (!c.equalsIgnoreCase("NA")){
@@ -112,20 +112,23 @@ class MontePlayer extends BasicBotV1_0 {
     private void playGames(Node n, AtomicReference<Integer> pVisits){
         Kingdom k = new Kingdom(kingdom);
         PlayerCommunication playerC = new PlayerCommunication();
-        Player us = new BasicBotV1_0_2(k, playerC, n.getCardName());
-        Player opp = new BasicBotV1_0_2(k, playerC);
+        Player us = new MoneyMakingBotV1_0_2(k, playerC, n.getCardName());
+        Player opp = new MoneyMakingBotV1_0_2(k, playerC);
         GameSimulator rs = new GameSimulator(us, opp);
         int result = rs.runGame();
         int[] scores = rs.getScores();
         //System.out.print(scores[1] + " ");
         //System.out.println(scores[0]);
         n.setAvgScore(n.getAvgScore() + scores[0]);
-        n.setNodeVisits(n.getNodeVisits() + 1);
+        n.setNodeVisits(n.getNodeVisits() + 1.0);
         if (result == 0){
-            n.setNodewins(n.getNodewins() + 1);
+            n.setNodewins(n.getNodewins() + 1.0);
         }
-        if (result == 1){
-            n.setNodewins(n.getNodewins() - 1);
+        else if (result == 1){
+            n.setNodewins(n.getNodewins() - 1.0);
+        }
+        else if (result == 2){
+            n.setNodewins(n.getNodewins() + 0.5);
         }
         pVisits.set(pVisits.get() + 1);
     }
@@ -225,6 +228,6 @@ class MontePlayer extends BasicBotV1_0 {
 		return mostExpensiveChoices;
 	}
 
-    private final int randomSimNum = 15;
+    private final int randomSimNum = 50;
     private final double uctConst = Math.sqrt(3);
 }

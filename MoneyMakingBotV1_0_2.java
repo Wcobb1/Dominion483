@@ -24,7 +24,7 @@ import dominionAgents.CardData.CardType;
 
 
 */
-public class MoneyMakingBotV1_0 extends BasicBotV1_0{
+public class MoneyMakingBotV1_0_2 extends BasicBotV1_0{
     
     protected String firstCard;
 	protected boolean firstCardBuy;  
@@ -34,7 +34,7 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
     ArrayList<Integer> cardsBought = new ArrayList<Integer>();
     
 
-    public MoneyMakingBotV1_0(Kingdom k, PlayerCommunication pc) {
+    public MoneyMakingBotV1_0_2(Kingdom k, PlayerCommunication pc) {
 		super(k, pc);
         this.firstCard = "NA";
         this.firstCardBuy = false;
@@ -43,7 +43,7 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         }
     }
 
-    public MoneyMakingBotV1_0(Kingdom k, PlayerCommunication pc, String c) {
+    public MoneyMakingBotV1_0_2(Kingdom k, PlayerCommunication pc, String c) {
 		super(k, pc);
         this.firstCard = c;
         this.firstCardBuy = true;
@@ -55,32 +55,30 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
     protected void resolveBuyPhase() {
         
         if (turnNumber <= 1 && !firstCard.equalsIgnoreCase("NA")){
-
             buyCard(firstCard);
-
-            while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you can
-                buyCard("Province");
-             }
-             
-             String cardToBuy = bestBuy();
-                          
-             if(coins < 8 && cardToBuy != null && actionNum < 1){
-                int index = kingdom.kingdomIndex(cardToBuy);
-
-                //System.out.print("buying "+cardToBuy+ " with " + coins + " coins left\n");
-                 buyCard(cardToBuy);
-                 Integer addHere = cardsBought.get(index);
-                 addHere ++;
-                 actionNum += 1;
-             }
-             while(kingdom.canBuy("Gold") && coins >= 6) { // while you can buy golds
-                 buyCard("Gold");
-             }
-             while(kingdom.canBuy("Silver") && coins >= 3){ // if you cant buy golds buy silvers
-                 buyCard("Silver");
-             }
-     
         }
+        while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you can
+            buyCard("Province");
+        }
+
+        String cardToBuy = bestBuy();
+                          
+        if(coins < 8 && cardToBuy != null && actionNum < 1){
+            int index = kingdom.kingdomIndex(cardToBuy);
+            //System.out.print("buying "+cardToBuy+ " with " + coins + " coins left\n");
+            buyCard(cardToBuy);
+            Integer addHere = cardsBought.get(index);
+            addHere ++;
+            actionNum += 1;
+        }
+
+        while(kingdom.canBuy("Gold") && coins >= 6) { // while you can buy golds
+            buyCard("Gold");
+        }
+        while(kingdom.canBuy("Silver") && coins >= 3){ // if you cant buy golds buy silvers
+        buyCard("Silver");
+        }
+
 
 
         //super.resolveBuyPhase();
@@ -96,9 +94,6 @@ public class MoneyMakingBotV1_0 extends BasicBotV1_0{
         
         int i = 0;
         
-
-       
-
 
         for(SupplyPile sp: supply){
             
