@@ -57,7 +57,7 @@ class MontePlayer extends BasicBotV1_0 {
     @Override
     protected void resolveBuyPhase() {
         if (buys > 0){
-            if(turnNumber % 6 == 0){
+            if(turnNumber % 10 == 0){
                 String c = getBestCard();
                 //System.out.println(c);
                 if (!c.equalsIgnoreCase("NA")){
@@ -225,6 +225,6 @@ class MontePlayer extends BasicBotV1_0 {
 		return mostExpensiveChoices;
 	}
 
-    private final int randomSimNum = 25;
+    private final int randomSimNum = 15;
     private final double uctConst = Math.sqrt(3);
 }
