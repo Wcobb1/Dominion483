@@ -12,7 +12,7 @@ public class BasicBotV1_0_2 extends Player {
 	
 	public BasicBotV1_0_2(Kingdom k, PlayerCommunication pc){
 		super(k, pc);
-		this.firstCard = "N";
+		this.firstCard = "NA";
 		this.firstCardBuy = false;
 	}
 
@@ -121,7 +121,7 @@ public class BasicBotV1_0_2 extends Player {
 	protected void resolveBuyPhase() {	
 	if (buys > 0){
 			// Random Buys
-			ArrayList<String> choices = getaffordableCardsList(coins);
+			ArrayList<Card> choices = highestCostList(coins);
 			if (choices.size() > 0){
 				Random rand = new Random();
 				int choice = rand.nextInt(choices.size());
@@ -129,18 +129,16 @@ public class BasicBotV1_0_2 extends Player {
 				// If 
 				if (turnNumber <= 1 && firstCardBuy == true){
 					if (!this.firstCard.equalsIgnoreCase("NA")){
-						if (choices.contains(firstCard)){
 							buyCard(firstCard);
 							firstCard = "NA";
 							firstCardBuy = false;
-						}
-						else {
-							buyCard(choices.get(choice));
-						}
+					}
+					else {
+						return;
 					}	
 				}
 				else {
-					buyCard(choices.get(choice));
+					buyCard(choices.get(choice).getName());
 				}
 				if (buys > 0 && coins > 1 && !(turnNumber <= 1 && this.firstCard.equalsIgnoreCase("NA"))){
 					//	System.out.println(buys + " : " + coins);
@@ -150,29 +148,7 @@ public class BasicBotV1_0_2 extends Player {
 		}
 	}
 	
-	private ArrayList<String> getaffordableCardsList(int cost){
-		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
-		ArrayList<String> choices = new ArrayList<String>();
-		for(SupplyPile sp: supply) {
-			Card c = sp.getCard();
-			if(c.getCost() <= coins && sp.getCardsRemaining() > 0) {
-				choices.add(c.getName());
-			}
-		}
-		return choices;
-	}
-
-	private ArrayList<Card> affordableCardsList(int cost){
-		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
-		ArrayList<Card> choices = new ArrayList<Card>();
-		for(SupplyPile sp: supply) {
-			Card c = sp.getCard();
-			if(c.getCost() <= coins && sp.getCardsRemaining() > 0) {
-				choices.add(c);
-			}
-		}
-		return choices;
-	}
+	
 
 	private ArrayList<Card> highestCostList(int cost){
 		int highestPossible = 0;
@@ -195,34 +171,6 @@ public class BasicBotV1_0_2 extends Player {
 			for(Card c: choices) {
 				if(c.getCost() == highestPossible) {
 					mostExpensiveChoices.add(c);
-				}
-			}
-		}
-		
-		return mostExpensiveChoices;
-	}
-
-	private ArrayList<String> StringhighestCostList(int cost){
-		int highestPossible = 0;
-		
-		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
-		ArrayList<Card> choices = new ArrayList<Card>();
-		for(SupplyPile sp: supply) {
-			Card c = sp.getCard();
-			if(c.getCost() <= cost && sp.getCardsRemaining() > 0 && !c.getName().equalsIgnoreCase("CURSE")) {
-				choices.add(c);
-				if(c.getCost() > highestPossible) {
-					highestPossible = c.getCost();
-				}
-			}
-		}
-		
-		ArrayList<String> mostExpensiveChoices = new ArrayList<String>();
-		
-		if(choices.size() > 0) {
-			for(Card c: choices) {
-				if(c.getCost() == highestPossible) {
-					mostExpensiveChoices.add(c.getName());
 				}
 			}
 		}
@@ -268,7 +216,7 @@ public class BasicBotV1_0_2 extends Player {
 
 	@Override
 	public void resolveWorkshop() {
-		ArrayList<Card> bestChoices = affordableCardsList(4);
+		ArrayList<Card> bestChoices = highestCostList(4);
 		if(bestChoices.size() > 0) {
 			Random rand = new Random();
 			int choice = rand.nextInt(bestChoices.size());
@@ -278,7 +226,7 @@ public class BasicBotV1_0_2 extends Player {
 	
 	@Override
 	public void resolveFeast() {
-		ArrayList<Card> bestChoices = affordableCardsList(5);
+		ArrayList<Card> bestChoices = highestCostList(5);
 		if(bestChoices.size() > 0) {
 			Random rand = new Random();
 			int choice = rand.nextInt(bestChoices.size());
@@ -404,7 +352,7 @@ public class BasicBotV1_0_2 extends Player {
 			trashCard(hand.getHand(), c);
 			
 			//gain card costing up to 2 more than the trashed card
-			ArrayList<Card> bestChoices = affordableCardsList(cost+2);
+			ArrayList<Card> bestChoices = highestCostList(cost+2);
 			if(bestChoices.size() > 0) {
 				choice = rand.nextInt(bestChoices.size());
 				gainCard(bestChoices.get(choice).getName());

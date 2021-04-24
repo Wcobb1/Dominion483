@@ -7,34 +7,36 @@ public class Node {
     public Node(){
         this.cardName = "NA";
         this.visited = 0;
-        this.wins = (double)0;
+        this.wins = 0;
         this.uctVal = Double.NEGATIVE_INFINITY;
-        this.childArray = null;
+        //this.childArray = null;
+        this.avgScore = 0;
     }
 
     public Node(String cardName){
-        this.c = new Card(cardName);
+        //this.c = new Card(cardName);
         this.cardName = cardName;
-        this.parent = null;
+        //this.parent = null;
         this.visited = 0;
         this.wins = 0;
         this.uctVal = Double.NEGATIVE_INFINITY;
-        this.childArray = null;
+        //this.childArray = null;
+        this.avgScore = 0;
     }
 
-    public Node getNodeParent(){
+    /*public Node getNodeParent(){
         return this.parent;
     }
 
     public void setNodeParent(Node parent){
         this.parent = parent;
-    }
+    }*/
 
-    public int getNodeVisits(){
+    public double getNodeVisits(){
         return this.visited;
     }
 
-    public void setNodeVisits(int visits){
+    public void setNodeVisits(double visits){
         this.visited = visits;
     }
 
@@ -45,7 +47,7 @@ public class Node {
     public void setNodewins(double wins){
         this.wins = wins;
     }
-
+    /*
     public Card getCard(){
         return this.c;
     }
@@ -53,7 +55,7 @@ public class Node {
     public void setCard(Card c){
         this.c = c;
     }
-    
+    */
     public double getUCTVal(){
         return this.uctVal;
     }
@@ -61,14 +63,14 @@ public class Node {
     public void setUCTVal(double uctVal){
         this.uctVal = uctVal;
     }
-
+    /*
     public ArrayList<Node> getChildrenNodes(){
         return this.childArray;
     }
 
     public void setChildrenNodes(ArrayList<Node> children){
         this.childArray = children;
-    }
+    }*/
 
     public String getCardName(){
         return this.cardName;
@@ -78,12 +80,21 @@ public class Node {
         this.cardName = cardName;
     }
 
-    private Card c;
-    private Node parent;
+    public double getAvgScore(){
+        return this.avgScore;
+    }
+    
+    public void setAvgScore(double score){
+        this.avgScore = score;
+    }
+
+    //private Card c;
+    //private Node parent;
     private String cardName;
     //private int parentVisits;
-    private ArrayList<Node> childArray;
-    private int visited;
+    //private ArrayList<Node> childArray;
+    private double visited;
     private double wins;
+    private double avgScore;
     private double uctVal;
 }

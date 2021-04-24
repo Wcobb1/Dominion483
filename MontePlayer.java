@@ -1,75 +1,95 @@
 package dominionAgents;
 
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import dominionAgents.CardData.CardType;
 
-/*
-    1. Check BasicBot_V1_0_2's resolve.
-    2. Stuck in a potential "infinite" loop. So, got to fix that, basically due to (1.).
-*/
-
-public class MontePlayer extends BasicBotV1_0 {
+class MontePlayer extends BasicBotV1_0 {
     public MontePlayer(Kingdom k, PlayerCommunication pc){
         super(k, pc);
     }
 
-    public String getBestPossibleCard(){
-        // Get Kingdom Supply Pile
-        ArrayList<SupplyPile> sp = kingdom.getSupplyPiles();
-        ArrayList<Node> cards = new ArrayList<Node>();
+    // Monte Carlo Method
+    public String getBestCard(){
+        // Get a list of highest affordable cards.
+        ArrayList<Card> cards = highestCostList(coins);
+        ArrayList<Node> cardNodes = new ArrayList<Node>();
         AtomicReference<Integer> parentCount = new AtomicReference<Integer>(0);
-        // Get Cards purchasable
-        for (SupplyPile s : sp){
-            Card c = s.getCard();
-            if(c.getCost() <= coins && s.getCardsRemaining() > 0){
-                //System.out.println("For Card " + c.getName());
-                Node n = new Node(c.getName());
-                cards.add(n);
-                for (int i = 0; i < 3; i++){
-                    playGame(n, kingdom, pc, parentCount);
-                    updateUCT(cards, parentCount);   
-                    System.out.println("\n"); 
-                }
+        // Generate Random Simulations with a purchase of a selected card.
+        for (Card c : cards){
+            //System.out.print(c.getName() + " : ");
+            Node n = new Node(c.getName());
+            cardNodes.add(n);
+            runSimulations(n, cardNodes, parentCount);
+        }
+        //System.out.println();
+        if (cardNodes.size() <= 0){
+            return "NA";
+        }
+
+        // Run Simulations.
+        //for (Node n : cardNodes){
+            for (int i = 0; i < randomSimNum; i++){
+                Node highestNode = getHighestUCTChildNode(cardNodes);
+                runSimulations(highestNode, cardNodes, parentCount);
+            }                
+        //}
+
+        /*double avgScore = 0;
+        String mostVisited = "NA";
+        for (Node node : cardNodes){
+            if (node.getAvgScore() / node.getNodeVisits() > avgScore){
+                avgScore = node.getAvgScore() / node.getNodeVisits();
+                mostVisited = node.getCardName();
             }
-        }
-        //System.out.println("\nOutside second loop 2 2\n");
-        // Add NA in case, decision to not buy a card.
-        Node nA = new Node();
-        cards.add(nA);
-        for (int i = 0; i < 3; i++){
-            playGame(nA, kingdom, pc, parentCount);
-            updateUCT(cards, parentCount);    
-            System.out.println("\n");
-        }
-        //System.out.println("\nOutside Adding No Card Buy Action\n");
-        // Run a number of games with the kingdom state and the card Node with highest UCT Value
-        System.out.println("\n Playouts Now \n");
-        int times = 50;
-        for (int i = 0; i < times; i++){
-            Node n = getHighestUCTChildNode(cards);
-            System.out.println("Highest Node : " + n.getCardName());
-            playGame(n, kingdom, pc, parentCount);
-            updateUCT(cards, parentCount);
-            System.out.println("\n Playouts \n");
-        }
-        String cName = null;
-        //int highestVisits;
+        }*/
 
-        Node bestNode = getHighestUCTChildNode(cards);
-        cName = bestNode.getCardName();
-        System.out.println("End of getBestCard()");
+        // Return the most visited card.
+        // Get the most visited node.
+        String mostVisited = getMostVisited(cardNodes);
 
-        return cName;
+        return mostVisited;
     }
 
+    @Override
+    protected void resolveBuyPhase() {
+        if (buys > 0){
+            if(turnNumber % 6 == 0){
+                String c = getBestCard();
+                //System.out.println(c);
+                if (!c.equalsIgnoreCase("NA")){
+                    buyCard(c);
+                    if (buys > 0 && coins > 1){
+                        resolveBuyPhase();
+                    }
+                }
+            }
+            else {
+                super.resolveBuyPhase();
+            }
+        }
+    }
+
+
+    //// Private /////
+
+    // Run a number of simulations.
+    private void runSimulations(Node n, ArrayList<Node> cardNodes, AtomicReference<Integer> pVisits){
+        // Run a game and update 
+        playGames(n, pVisits);
+        updateUCT(cardNodes, pVisits);
+    }
+
+
     // Get the Highest UCT Child Node to select.
-    public Node getHighestUCTChildNode(ArrayList<Node> cards){
-        double highestUCT = 0;
+    private Node getHighestUCTChildNode(ArrayList<Node> cardNodes){
+        double highestUCT = Double.NEGATIVE_INFINITY;
         Node highestUCTNode = null;
-        for (Node n : cards){
-            if (n.getUCTVal() > highestUCT){
+        for (Node n : cardNodes){
+            if (n.getUCTVal() >= highestUCT){
                 highestUCT = n.getUCTVal();
                 highestUCTNode = n;
             }
@@ -77,55 +97,134 @@ public class MontePlayer extends BasicBotV1_0 {
         return highestUCTNode;
     }
 
-    // Random Simulations with first car bought being the card in the Node (n).
-    public void playGame(Node n, Kingdom k, PlayerCommunication pc, AtomicReference<Integer> parentCount){
-        Kingdom newK = new Kingdom(k);
-        PlayerCommunication p = new PlayerCommunication(pc);
-        Player ourP = new BasicBotV1_0_2(newK, p, n.getCardName());
-        Player opp = new BasicBotV1_0_2(newK, p);
-        GameSimulator gs = new GameSimulator(ourP, opp);
-        int result = gs.runGame();
-        if (result == 0){
-            n.setNodewins(n.getNodewins() + (double)1);
-        }
-        if (result == 1){
-            n.setNodewins(n.getNodewins() + (double)-1);
-        }
-        if (result == 2){
-            n.setNodewins(n.getNodewins() - (double)0);
-        }
-        n.setNodeVisits(n.getNodeVisits() + 1);
-        parentCount.set(parentCount.get() + 1);
-    }
-
-    // Update UCT Values for all Nodes/Cards
-    public void updateUCT(ArrayList<Node> cards, AtomicReference<Integer> parentCount){
-        for (Node n : cards){
+    // Update UCT Values for all Nodes / cardNodes
+    private void updateUCT(ArrayList<Node> cardNodes, AtomicReference<Integer> parentCount){
+        for (Node n : cardNodes){
             double uct = Double.NEGATIVE_INFINITY;
             if (n.getNodeVisits() > 0){
-                uct = (n.getNodewins()/(double)n.getNodeVisits()) + (constant * Math.sqrt(Math.log((double)parentCount.get()) / (double)n.getNodeVisits()));
+                uct =  ((n.getNodewins()/(double)n.getNodeVisits()) + (uctConst * Math.sqrt(Math.log((double)parentCount.get()) / (double)n.getNodeVisits())));
                 n.setUCTVal(uct);        
             }
-            System.out.println("Card : " + n.getCardName() + " ::: " + uct);
+            //System.out.println("Card : " + n.getCardName() + " ::: " + uct);
         }
     }   
 
-    //
-    protected void resolveBuyPhase(){
-        if (buys > 0){
-            String cardBuy = "NA";
-            cardBuy = getBestPossibleCard();
-            System.out.println("\n Coins :" + coins);
-            System.out.println("Card Bought :" + cardBuy + "\n");
-            if(!cardBuy.equalsIgnoreCase("NA")) {
-                buyCard(cardBuy);
-            }
+    private void playGames(Node n, AtomicReference<Integer> pVisits){
+        Kingdom k = new Kingdom(kingdom);
+        PlayerCommunication playerC = new PlayerCommunication();
+        Player us = new MoneyMakingBotV1_0_2(k, playerC, n.getCardName());
+        Player opp = new MoneyMakingBotV1_0_2(k, playerC);
+        GameSimulator rs = new GameSimulator(us, opp);
+        int result = rs.runGame();
+        int[] scores = rs.getScores();
+        //System.out.print(scores[1] + " ");
+        //System.out.println(scores[0]);
+        n.setAvgScore(n.getAvgScore() + scores[0]);
+        n.setNodeVisits(n.getNodeVisits() + 1);
+        if (result == 0){
+            n.setNodewins(n.getNodewins() + 1);
         }
-        if (buys > 0 && coins > 1){
-            resolveBuyPhase();
+        if (result == 1){
+            n.setNodewins(n.getNodewins() - 1);
         }
-        super.resolveBuyPhase();
+        pVisits.set(pVisits.get() + 1);
     }
 
-    private double constant = Math.sqrt(2);
+    private String getMostVisited(ArrayList<Node> cardNodes){
+        double visits = 0;
+        Node bestNode = null;
+        for (Node n : cardNodes){
+            if (n.getNodeVisits() > visits){
+                visits = n.getNodeVisits();
+                bestNode = n;
+            }
+        }
+        return bestNode.getCardName();
+    }
+
+    private String bestStatCard(ArrayList<Node> cardNodes){
+        double winRate = 0;
+        double avgScore = 0;
+        String c = "NA";
+        for (Node n : cardNodes){
+            double nodeWRate = n.getNodewins() / n.getNodeVisits();
+            double nodeAScore = n.getAvgScore() / n.getNodewins();
+            //System.out.println(n.getCardName() + " : " + "  :  " + nodeAScore);
+            if ((nodeWRate * nodeAScore) > (winRate * avgScore)){
+                winRate = nodeWRate;
+                avgScore = nodeAScore;
+                c = n.getCardName();
+            }
+        }
+        return c;
+    }
+    
+
+    private ArrayList<Card> highestCostList(int cost){
+		int highestTreasure = 0;
+        int highestVictory = 0;
+
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		ArrayList<Card> choices = new ArrayList<Card>();
+		for(SupplyPile sp: supply) {
+			Card c = sp.getCard();
+			if(c.getCost() <= cost && sp.getCardsRemaining() > 0 && !c.getName().equalsIgnoreCase("CURSE")) {
+                if (c.isCardType(CardType.VICTORY) || c.isCardType(CardType.TREASURE)){
+                    choices.add(c);
+                    if (c.isCardType(CardType.VICTORY) && c.getCost() > highestVictory){
+                        highestVictory = c.getCost();
+                    }
+                    if (c.isCardType(CardType.TREASURE) && c.getCost() > highestTreasure){
+                        highestTreasure = c.getCost();
+                    }    
+                }
+			}
+		}
+		
+		ArrayList<Card> mostExpensiveChoices = new ArrayList<Card>();
+		
+		if(choices.size() > 0) {
+			for(Card c: choices) {
+				if(c.getCost() == highestTreasure && c.isCardType(CardType.TREASURE)) {
+					mostExpensiveChoices.add(c);
+				}
+                if(c.getCost() == highestVictory && c.isCardType(CardType.VICTORY)){
+                    mostExpensiveChoices.add(c);
+                }
+			}
+		}
+		
+		return mostExpensiveChoices;
+	}
+
+    private ArrayList<Card> highestCostListTwo(int cost){
+		int highestPossible = 0;
+		
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		ArrayList<Card> choices = new ArrayList<Card>();
+		for(SupplyPile sp: supply) {
+			Card c = sp.getCard();
+			if(c.getCost() <= cost && sp.getCardsRemaining() > 0 && !c.getName().equalsIgnoreCase("CURSE")) {
+				choices.add(c);
+				if(c.getCost() > highestPossible) {
+					highestPossible = c.getCost();
+				}
+			}
+		}
+		
+		ArrayList<Card> mostExpensiveChoices = new ArrayList<Card>();
+		
+		if(choices.size() > 0) {
+			for(Card c: choices) {
+				if(c.getCost() == highestPossible) {
+					mostExpensiveChoices.add(c);
+				}
+			}
+		}
+		
+		return mostExpensiveChoices;
+	}
+
+    private final int randomSimNum = 25;
+    private final double uctConst = Math.sqrt(3);
 }

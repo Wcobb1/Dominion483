@@ -4,7 +4,7 @@ public class Driver {
 
 	public static void main(String[] args) {
 		
-		int games = 1000;
+		int games = 100;
 		int[] winner = {0,0,0};
 		int turns = 0;
 		int cardsPlayed = 0;
@@ -14,18 +14,22 @@ public class Driver {
 		long startTime = System.nanoTime();
 		
 		//DecisionTreePlayerTrainer trainer = new DecisionTreePlayerTrainer(1000);
-		
+		//DecisionTreePlayerTrainer trainer2 = new DecisionTreePlayerTrainer(1000);
+
 		for(int i = 0;i < games;i ++) {
+			System.out.println("Game #" + (i+1));
 			Kingdom kingdom = new Kingdom();
 			PlayerCommunication pc = new PlayerCommunication();
 			//Set player types
+			Player p2 = new BasicBotV1_0(kingdom, pc);
 			//Player p1 = new BasicBotV1_0(kingdom, pc);
 			//Player p1 = new DecisionTreePlayerV1_0(kingdom, pc, trainer.getEarlyPrioList(), trainer.getMidPrioList(), trainer.getLatePrioList());
-			//Player p1 = new AttackBotV1_0(kingdom, pc);
-			Player p2 = new MoneyMakingBotV1_0(kingdom, pc);
-			Player p1 = new RushBotV1_0(kingdom, pc);
-			//Player p2 = new MontePlayer(kingdom, pc);
-			
+			//Player p2 = new AttackBotV1_0(kingdom, pc);
+			//Player p1 = new MoneyMakingBotV1_0(kingdom, pc);
+			Player p1 = new MontePlayer(kingdom, pc);
+			//Player p2 = new RushBotV1_0(kingdom, pc);
+			//Player p2 = new DecisionTreePlayerV1_0(kingdom, pc, trainer2.getEarlyPrioList(), trainer2.getMidPrioList(), trainer2.getLatePrioList());			
+
 			GameSimulator gs = new GameSimulator(p1, p2);
 			int result = gs.runGame();
 			winner[result] ++;
@@ -47,13 +51,12 @@ public class Driver {
 		System.out.println("Player 2: Win %: " + 100 *(double)winner[1]/games + " - Avg. Score: " + (double)cumulativeScores[1]/games);
 		System.out.println("Draw %: " + 100 *(double)winner[2]/games);
 		
+		
+
 		//sa.printFirstTwoRounds();
 		
 		//sa.calculateWinnerOwnPercentage();
 		//sa.printWinnerOwnPercentage();
-		
-		
-		
 		
 	}
 
