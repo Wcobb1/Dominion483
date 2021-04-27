@@ -189,6 +189,15 @@ public class CardData {
 		return -1;
 	}
 	
+	public static int getCardCost(String name) {
+		int num = getCardNumber(name);
+		if(num >= 0) {
+			return cardValues[num][2][0];
+		}else {
+			return -1;
+		}
+	}
+	
 	public static String getCardName(int num) {
 		if(num < cardNames.length) {
 			return cardNames[num];
@@ -214,7 +223,6 @@ public class CardData {
 		c.setCost(cardValues[cardNum][2][0]);
 	}
 	
-
 	//helps the money making bot pick a card
 	public static ArrayList<Float> preferedCardM(){
         
@@ -234,5 +242,5 @@ public class CardData {
 		}
 		return wantedCards;
 	}
-
+	
 }
