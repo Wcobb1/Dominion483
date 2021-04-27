@@ -17,6 +17,12 @@ import dominionAgents.CardData.CardType;
 
 /*TO DO
     Need to fix the ratio value to give different 
+
+
+
+
+
+
 */
 public class MoneyMakingBotV1_0_2 extends BasicBotV1_0{
     
@@ -48,37 +54,36 @@ public class MoneyMakingBotV1_0_2 extends BasicBotV1_0{
 
     protected void resolveBuyPhase() {
         
-        if (turnNumber <= 1 && !firstCard.equalsIgnoreCase("NA") && coins >= CardData.getCardCost(firstCard)){
+        if (turnNumber <= 1 && !firstCard.equalsIgnoreCase("NA")){
             buyCard(firstCard);
-        }else if(kingdom.canBuy("Province") && (coins >= 8) && buys > 0){// buy as many provinces as you can
-	        buyCard("Province");
-	    }else {
-	
-	        String cardToBuy = bestBuy();
-	                          
-	        if(coins < 8 && cardToBuy != null && actionNum < 1 && buys > 0){
-	            int index = kingdom.kingdomIndex(cardToBuy);
-	            //System.out.print("buying "+cardToBuy+ " with " + coins + " coins left\n");
-	            if(coins >= CardData.getCardCost(cardToBuy) && kingdom.canBuy(cardToBuy)) {
-	            	buyCard(cardToBuy);
-	            	Integer addHere = cardsBought.get(index);
-	                addHere ++;
-	                actionNum += 1;
-	            }
-	        }else if(kingdom.canBuy("Gold") && coins >= 6 && buys > 0) { // while you can buy golds
-	            buyCard("Gold");
-	        }else if(kingdom.canBuy("Silver") && coins >= 3 && buys > 0){ // if you can't buy golds buy silvers
-	        	buyCard("Silver");
-	        }else {
-	        	super.resolveBuyPhase();
-	        }
+        }
+        while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you can
+            buyCard("Province");
+        }
 
+        String cardToBuy = bestBuy();
+                          
+        if(coins < 8 && cardToBuy != null && actionNum < 1){
+            int index = kingdom.kingdomIndex(cardToBuy);
+            //System.out.print("buying "+cardToBuy+ " with " + coins + " coins left\n");
+            buyCard(cardToBuy);
+            Integer addHere = cardsBought.get(index);
+            addHere ++;
+            actionNum += 1;
         }
+
+        while(kingdom.canBuy("Gold") && coins >= 6) { // while you can buy golds
+            buyCard("Gold");
+        }
+        while(kingdom.canBuy("Silver") && coins >= 3){ // if you cant buy golds buy silvers
+        buyCard("Silver");
+        }
+
+
+
+        //super.resolveBuyPhase();
+
         
-        if(buys > 0 && coins > 1) {
-        	resolveBuyPhase();
-        }
- 
 	}
 
     protected String bestBuy(){

@@ -15,55 +15,40 @@ class MontePlayer extends BasicBotV1_0 {
     // Monte Carlo Method
     public String getBestCard(){
         // Get a list of highest affordable cards.
-        ArrayList<Thread> threadList = new ArrayList<>(); 
+        ArrayList<Thread> threadList = new ArrayList<>();
+        ArrayList<MonteSimThread> simList = new ArrayList<>();
         ArrayList<Card> cards = highestCostList(coins);
         ArrayList<Node> cardNodes = new ArrayList<Node>();
         AtomicReference<Integer> parentCount = new AtomicReference<Integer>(0);
-        // Generate Random Simulations with a purchase of a selected card.
+        // Generate Simulations with a purchase of a selected card.
         for (Card c : cards){
             //System.out.print(c.getName() + " : ");
             Node n = new Node(c.getName());
             cardNodes.add(n);
-            runSimulations(n, cardNodes, parentCount);
+            
+            // Parallelism
+            MonteSimThread simN = new MonteSimThread(c.getName(), n, parentCount, kingdom);
+            simList.add(simN);
+            simN.start();
+            threadList.add(simN.getThread());
         }
+
+        try {
+            for (int i = 0; i < threadList.size(); i++){
+                threadList.get(i).join();
+            }
+        } catch (InterruptedException e) {
+            System.out.println("MontePlayer thread Interrupted");
+        }
+
         //System.out.println();
         if (cardNodes.size() <= 0){
             return "NA";
         }
-        // Run Simulations.
-        //for (Node n : cardNodes){
-            
-            for (int i = 0; i < randomSimNum; i++){
-                /*MonteSimThread mst = new MonteSimThread("Thread " + i, cardNodes, parentCount);
-                mst.run();
-                threadList.add(mst.getThread());
-                */
-                Node highestNode = getHighestUCTChildNode(cardNodes);
-                runSimulations(highestNode, cardNodes, parentCount);            }                
-        //}
-        /*boolean completed = false;
-        try{
-            for (Thread t : threadList){
-                t.join();
-            }
-            completed = true;    
-        } catch (InterruptedException e){
-            System.out.println("MontePlayer interrupted");
-        }
-        */
-        
-        /*double avgScore = 0;
-        String mostVisited = "NA";
-        for (Node node : cardNodes){
-            if (node.getAvgScore() / node.getNodeVisits() > avgScore){
-                avgScore = node.getAvgScore() / node.getNodeVisits();
-                mostVisited = node.getCardName();
-            }
-        }*/
-
+ 
         // Return the most visited card.
         // Get the most visited node.
-        String mostVisited = getMostVisited(cardNodes);
+        String mostVisited = bestStatCard(cardNodes);
 
         return mostVisited;
     }
@@ -89,40 +74,6 @@ class MontePlayer extends BasicBotV1_0 {
 
 
     //// Private /////
-
-    // Run a number of simulations.
-    private void runSimulations(Node n, ArrayList<Node> cardNodes, AtomicReference<Integer> pVisits){
-        // Run a game and update 
-        playGames(n, pVisits);
-        updateUCT(cardNodes, pVisits);
-    }
-
-
-    // Get the Highest UCT Child Node to select.
-    private Node getHighestUCTChildNode(ArrayList<Node> cardNodes){
-        double highestUCT = Double.NEGATIVE_INFINITY;
-        Node highestUCTNode = null;
-        for (Node n : cardNodes){
-            if (n.getUCTVal() >= highestUCT){
-                highestUCT = n.getUCTVal();
-                highestUCTNode = n;
-            }
-        }
-        return highestUCTNode;
-    }
-
-    // Update UCT Values for all Nodes / cardNodes
-    private void updateUCT(ArrayList<Node> cardNodes, AtomicReference<Integer> parentCount){
-        for (Node n : cardNodes){
-            double uct = Double.NEGATIVE_INFINITY;
-            if (n.getNodeVisits() > 0){
-                uct =  ((n.getNodewins()/(double)n.getNodeVisits()) + (uctConst * Math.sqrt(Math.log((double)parentCount.get()) / (double)n.getNodeVisits())));
-                n.setUCTVal(uct);        
-            }
-            //System.out.println("Card : " + n.getCardName() + " ::: " + uct);
-        }
-    }   
-
     private void playGames(Node n, AtomicReference<Integer> pVisits){
         Kingdom k = new Kingdom(kingdom);
         PlayerCommunication playerC = new PlayerCommunication();
@@ -147,17 +98,6 @@ class MontePlayer extends BasicBotV1_0 {
         pVisits.set(pVisits.get() + 1);
     }
 
-    private String getMostVisited(ArrayList<Node> cardNodes){
-        double visits = 0;
-        Node bestNode = null;
-        for (Node n : cardNodes){
-            if (n.getNodeVisits() > visits){
-                visits = n.getNodeVisits();
-                bestNode = n;
-            }
-        }
-        return bestNode.getCardName();
-    }
 
     private String bestStatCard(ArrayList<Node> cardNodes){
         double winRate = 0;
@@ -214,35 +154,5 @@ class MontePlayer extends BasicBotV1_0 {
 		return mostExpensiveChoices;
 	}
 
-    private ArrayList<Card> highestCostListTwo(int cost){
-		int highestPossible = 0;
-		
-		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
-		ArrayList<Card> choices = new ArrayList<Card>();
-		for(SupplyPile sp: supply) {
-			Card c = sp.getCard();
-			if(c.getCost() <= cost && sp.getCardsRemaining() > 0 && !c.getName().equalsIgnoreCase("CURSE")) {
-				choices.add(c);
-				if(c.getCost() > highestPossible) {
-					highestPossible = c.getCost();
-				}
-			}
-		}
-		
-		ArrayList<Card> mostExpensiveChoices = new ArrayList<Card>();
-		
-		if(choices.size() > 0) {
-			for(Card c: choices) {
-				if(c.getCost() == highestPossible) {
-					mostExpensiveChoices.add(c);
-				}
-			}
-		}
-		
-		return mostExpensiveChoices;
-	}
-
-    private final int randomSimNum = 150;
-    private final double uctConst = Math.sqrt(3);
-    private final int TURNS_TIL_MONTE = 2;
+    private final int TURNS_TIL_MONTE = 10;
 }

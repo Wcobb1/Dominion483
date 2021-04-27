@@ -33,17 +33,17 @@ public class Driver2 implements Runnable, Callable {
 			//DecisionTreePlayerTrainer trainer2 = new DecisionTreePlayerTrainer(1000);
 
 			for(int i = 0;i < games;i ++) {
-				//System.out.println("Game #" + (i+1));
+				System.out.println("Game #" + (i+1));
 				Kingdom kingdom = new Kingdom();
 				PlayerCommunication pc = new PlayerCommunication();
 				//Set player types
 				//Player p2 = new BasicBotV1_0(kingdom, pc);
 				//Player p1 = new BasicBotV1_0(kingdom, pc);
 				//Player p1 = new DecisionTreePlayerV1_0(kingdom, pc, trainer.getEarlyPrioList(), trainer.getMidPrioList(), trainer.getLatePrioList());
-				//Player p1 = new AttackBotV1_0(kingdom, pc);
-				Player p1 = new MoneyMakingBotV1_0(kingdom, pc);
-				//Player p2 = new MontePlayer(kingdom, pc);
-				Player p2 = new RushBotV1_0(kingdom, pc);
+				Player p1 = new AttackBotV1_0(kingdom, pc);
+				//Player p1 = new MoneyMakingBotV1_0(kingdom, pc);
+				Player p2 = new MontePlayer(kingdom, pc);
+				//Player p2 = new RushBotV1_0(kingdom, pc);
 				//Player p2 = new DecisionTreePlayerV1_0(kingdom, pc, trainer2.getEarlyPrioList(), trainer2.getMidPrioList(), trainer2.getLatePrioList());			
 				GameSimulator gs = new GameSimulator(p1, p2);
 				int result = gs.runGame();
