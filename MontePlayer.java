@@ -15,6 +15,7 @@ class MontePlayer extends BasicBotV1_0 {
     // Monte Carlo Method
     public String getBestCard(){
         // Get a list of highest affordable cards.
+        ArrayList<Thread> threadList = new ArrayList<>(); 
         ArrayList<Card> cards = highestCostList(coins);
         ArrayList<Node> cardNodes = new ArrayList<Node>();
         AtomicReference<Integer> parentCount = new AtomicReference<Integer>(0);
@@ -29,15 +30,28 @@ class MontePlayer extends BasicBotV1_0 {
         if (cardNodes.size() <= 0){
             return "NA";
         }
-
         // Run Simulations.
         //for (Node n : cardNodes){
+            
             for (int i = 0; i < randomSimNum; i++){
+                /*MonteSimThread mst = new MonteSimThread("Thread " + i, cardNodes, parentCount);
+                mst.run();
+                threadList.add(mst.getThread());
+                */
                 Node highestNode = getHighestUCTChildNode(cardNodes);
-                runSimulations(highestNode, cardNodes, parentCount);
-            }                
+                runSimulations(highestNode, cardNodes, parentCount);            }                
         //}
-
+        /*boolean completed = false;
+        try{
+            for (Thread t : threadList){
+                t.join();
+            }
+            completed = true;    
+        } catch (InterruptedException e){
+            System.out.println("MontePlayer interrupted");
+        }
+        */
+        
         /*double avgScore = 0;
         String mostVisited = "NA";
         for (Node node : cardNodes){
@@ -57,7 +71,7 @@ class MontePlayer extends BasicBotV1_0 {
     @Override
     protected void resolveBuyPhase() {
         if (buys > 0){
-            if(turnNumber % 12 == 0){
+            if(turnNumber % TURNS_TIL_MONTE == 0){
                 String c = getBestCard();
                 //System.out.println(c);
                 if (!c.equalsIgnoreCase("NA")){
@@ -228,6 +242,7 @@ class MontePlayer extends BasicBotV1_0 {
 		return mostExpensiveChoices;
 	}
 
-    private final int randomSimNum = 50;
+    private final int randomSimNum = 150;
     private final double uctConst = Math.sqrt(3);
+    private final int TURNS_TIL_MONTE = 2;
 }
