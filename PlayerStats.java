@@ -3,7 +3,8 @@ package dominionAgents;
 import java.util.ArrayList;
 
 public class PlayerStats {
-
+	
+	protected Kingdom kingdom;
 	protected ArrayList<Card> cardsGainedFirstTwoTurns = new ArrayList<Card>();
 	protected ArrayList<Card> cardsMidGame = new ArrayList<Card>();
 	protected ArrayList<Card> cardsLateGame = new ArrayList<Card>();
@@ -36,6 +37,10 @@ public class PlayerStats {
 		0
 	};
 	
+	public PlayerStats(Kingdom kingdom) {
+		this.kingdom = kingdom;
+	}
+	
 	public void addCardFirstTwoTurns(Card c) {
 		cardsGainedFirstTwoTurns.add(c);
 	}
@@ -54,6 +59,14 @@ public class PlayerStats {
 	
 	public int[] getCardsOwned() {
 		return cardsOwned;
+	}
+	
+	public StringInt[] getDeckOwned() {
+		StringInt[] cards = new StringInt[17];
+		for(int i = 0;i < 17;i ++) {
+			cards[i] = new StringInt(kingdom.cardNameFromIndex(i), cardsOwned[i]);
+		}
+		return cards;
 	}
 	
 	public ArrayList<String> getCardsFirstTwoTurns(){

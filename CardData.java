@@ -243,4 +243,8 @@ public class CardData {
 		return wantedCards;
 	}
 	
+	public static int getNumCards() {
+		return cardValues.length;
+	}
+	
 }

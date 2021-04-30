@@ -102,6 +102,22 @@ public class GameSimulator {
 		return cardsPlayed;
 	}
 	
+	public StringInt[][] getDecks(){
+		StringInt[][] playerDecks = new StringInt[2][17];
+		playerDecks[0] = p1Stats.getDeckOwned();
+		playerDecks[1] = p2Stats.getDeckOwned();
+		return playerDecks;
+	}
+	
+	public String[] getCardsInKingdom() {
+		String[] cards = new String[10];
+		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
+		for(int i = 0;i < supply.size()-7;i ++) {
+			cards[i] = supply.get(i+7).getName();
+		}
+		return cards;
+	}
+	
 	public ArrayList<StringInt> getWinnerCardsOwned() {
 		ArrayList<StringInt> cardCounts = new ArrayList<StringInt>();
 		for(int i = 0;i < winnerCards.length;i ++) {
