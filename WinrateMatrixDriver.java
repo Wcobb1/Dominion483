@@ -1,6 +1,7 @@
 package dominionAgents;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class WinrateMatrixDriver {
 
@@ -16,12 +17,41 @@ public class WinrateMatrixDriver {
 			"RushBot "
 	};
 	
+	private static Vector<Double> playerRunTimes;
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
+		//initialize runTime vector
+		playerRunTimes = new Vector<Double>();
+		for(int i = 0;i < playerNames.length;i ++) {
+			playerRunTimes.add(0.0);
+		}
+		
 		int gamesToPlayInEachMatchup = 1000;
 		
-		double[][] winrates = getWinratesParallel(gamesToPlayInEachMatchup);
+		//run in parallel
+		printWinrates(gamesToPlayInEachMatchup, true);
+		
+		for(int i = 0;i < playerRunTimes.size();i ++) {
+			playerRunTimes.set(i, (double)playerRunTimes.get(i)/playerRunTimes.size());
+		}
+		
+		System.out.println("Avg. player run times: ");
+		for(int i = 0;i < playerNames.length;i ++) {
+			System.out.println(playerNames[i] + ": " + playerRunTimes.get(i));
+		}
+		
+		
+	}
+	
+	public static void printWinrates(int games, boolean parallel) {
+		double[][] winrates;
+		if(parallel) {
+			winrates = getWinratesParallel(games);
+		}else {
+			winrates = getWinratesSerial(games);
+		}
 		
 		System.out.println("Winrates:");
 		System.out.print("Player\t\t");
@@ -36,7 +66,6 @@ public class WinrateMatrixDriver {
 			}
 			System.out.print("\n");
 		}
-		
 	}
 	
 	public static double[][] getWinratesSerial(int games){
@@ -45,9 +74,14 @@ public class WinrateMatrixDriver {
 		int cardsPlayed = 0;
 		int turns = 0;
 		
-		DecisionTreePlayerTrainer dtpTrainer = new DecisionTreePlayerTrainer(games, true);
-		
 		long startTime = System.nanoTime();
+		
+		DecisionTreePlayerTrainer dtpTrainer = new DecisionTreePlayerTrainer(games, false);
+		
+		long midTime = System.nanoTime();
+		long midTotalTime = midTime - startTime;
+		double midTimeInSeconds = (double)midTotalTime/1_000_000_000;
+		System.out.println("Gini player took " + midTimeInSeconds + " seconds to train in serial.");
 		
 		//run matchups
 		for(int i = 0;i < numPlayers;i ++) {
@@ -85,9 +119,14 @@ public class WinrateMatrixDriver {
 		
 		ArrayList<Thread> threads = new ArrayList<Thread>();
 		
+		long startTime = System.nanoTime();
+		
 		DecisionTreePlayerTrainer dtpTrainer = new DecisionTreePlayerTrainer(games, true);
 		
-		long startTime = System.nanoTime();
+		long midTime = System.nanoTime();
+		long midTotalTime = midTime - startTime;
+		double midTimeInSeconds = (double)midTotalTime/1_000_000_000;
+		System.out.println("Gini player took " + midTimeInSeconds + " seconds to train in parallel.");
 		
 		//run matchups
 		for(int i = 0;i < numPlayers;i ++) {
@@ -120,6 +159,8 @@ public class WinrateMatrixDriver {
 							long endTime = System.nanoTime();
 							long elapsedTime = endTime - startTime;
 							double elapsedTimeInSeconds = (double)elapsedTime/1_000_000_000;
+							playerRunTimes.set(index1, playerRunTimes.get(index1) + elapsedTimeInSeconds);
+							playerRunTimes.set(index2, playerRunTimes.get(index2) + elapsedTimeInSeconds);
 							System.out.println("Thread: " + playerNames[index1] + ", " + playerNames[index2]
 									+ ": " + elapsedTimeInSeconds + " seconds to run.");
 						}
