@@ -2,7 +2,7 @@ package dominionAgents;
 
 import java.util.ArrayList;
 
-public class Kingdom{
+public class Kingdom {
 
 	private int emptySupplyPiles = 0;
 	private ArrayList<SupplyPile> supply;
@@ -33,17 +33,8 @@ public class Kingdom{
 	}
 	
 	public Kingdom(Kingdom k){
-		this.trash = new ArrayList<Card>();
-		for (Card c : k.trash){
-			Card card = new Card(c.getName());
-			trash.add(card);
-		}
-
-		this.supply = new ArrayList<SupplyPile>();
-		for (SupplyPile sp : k.supply){
-			SupplyPile s = new SupplyPile(sp.getCard(), sp.getCardsRemaining());
-			this.supply.add(s);
-		}
+		this.trash = new ArrayList<Card>(k.trash);
+		this.supply = new ArrayList<SupplyPile>(k.getSupplyPiles());
 	}
 
 	//return number of empty supply piles

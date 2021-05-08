@@ -20,7 +20,7 @@ public abstract class Player {
 	protected int cardsPlayedThisTurn;
 	//used for stats
 	protected int turnNumber = 0;
-	protected PlayerStats ps = new PlayerStats();
+	protected PlayerStats ps;
 	
 	//constructor
 	public Player(Kingdom k, PlayerCommunication pc) {
@@ -33,6 +33,7 @@ public abstract class Player {
 		inPlay = new ArrayList<Card>();
 		cardsGained = new ArrayList<Card>();
 		this.pc = pc;
+		ps = new PlayerStats(k);
 	}
 	
 	/**Abstract methods(must be implemented in child classes)**/
@@ -201,7 +202,7 @@ public abstract class Player {
 	public void buyCard(String cardName) {
 		if(kingdom.canBuy(cardName)) {
 			Card newCard = new Card(cardName);
-			if(coins >= newCard.getCost()) {
+			if(coins >= newCard.getCost() && buys > 0) {
 				cardsGained.add(newCard);
 				kingdom.cardRemoved(cardName);
 				buys --;
