@@ -24,12 +24,12 @@ public class WinrateMatrixDriver {
 	
 	private static Vector<Double> playerRunTimes;
 	private static ArrayList<ArrayList<String>> csvList = new ArrayList<>();
-	private static boolean serial = true;
+	private static boolean serial = false;
 	private static boolean noMonte = false;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-
+		ArrayList<String> mainCSV = new ArrayList<>();
 		//initialize runTime vector
 		playerRunTimes = new Vector<Double>();
 		if (noMonte){
@@ -56,26 +56,35 @@ public class WinrateMatrixDriver {
 			System.out.println("Avg. player run times: ");
 			for(int i = 0;i < playerNameLen;i ++) {
 				System.out.println(playerNames[i] + ": " + playerRunTimes.get(i));
+				mainCSV.add(playerNames[i]);
+				mainCSV.add(",");
+				mainCSV.add(playerRunTimes.get(i).toString());
+				mainCSV.add("\n");
 				playerRunTimes.set(i, 0.0);
 			}	
 						
 		}
-		
-		//run in parallel
-		printWinrates(gamesToPlayInEachMatchup, true);
-		for(int i = 0;i < playerRunTimes.size();i ++) {
-			playerRunTimes.set(i, (double)playerRunTimes.get(i)/playerRunTimes.size());
-		}
-		
-		System.out.println("Avg. player run times: ");
-		for(int j = 0;j < playerNameLen;j ++) {
-			System.out.println(playerNames[j] + ": " + playerRunTimes.get(j));
-		}
-		
-		
+		else {
+			//run in parallel
+			printWinrates(gamesToPlayInEachMatchup, true);
+			for(int i = 0;i < playerRunTimes.size();i ++) {
+				playerRunTimes.set(i, (double)playerRunTimes.get(i)/playerRunTimes.size());
+			}
+			
+			System.out.println("Avg. player run times: ");
+			for(int j = 0;j < playerNameLen;j ++) {
+				System.out.println(playerNames[j] + ": " + playerRunTimes.get(j));
+				mainCSV.add(playerNames[j]);
+				mainCSV.add(",");
+				mainCSV.add(playerRunTimes.get(j).toString());
+				mainCSV.add("\n");
+			}
+		}		
+		exportToCSV(csvList, serial);
 	}
 	
 	public static void printWinrates(int games, boolean parallel) {
+
 		double[][] winrates;
 		if(parallel) {
 			winrates = getWinratesParallel(games);
@@ -83,19 +92,41 @@ public class WinrateMatrixDriver {
 			winrates = getWinratesSerial(games);
 		}
 		
+		ArrayList<String> getWinData = new ArrayList<>();
+		
 		System.out.println("Winrates:");
+		getWinData.add("Winrates:");
+		getWinData.add("\n");
 		System.out.print("Player\t\t");
+		getWinData.add("Player");
+		getWinData.add(",");
 		for(String s:playerNames) {
-			System.out.print(s+"\t");
+			if (noMonte && !s.equalsIgnoreCase("MontePlayer")) {
+				System.out.print(s+"\t");
+				getWinData.add(s);
+				getWinData.add(",");				
+			}
+			else {
+				System.out.print(s+"\t");
+				getWinData.add(s);
+				getWinData.add(",");				
+			}
 		}
+		getWinData.add("\n");
 		System.out.print("\n");
 		for(int i = 0;i < winrates.length;i ++) {
 			System.out.print(playerNames[i] + "\t");
+			getWinData.add(playerNames[i]);
+			getWinData.add(",");
 			for(int j = 0;j < winrates.length;j ++) {
 				System.out.print(winrates[i][j] + "\t\t");
+				getWinData.add(Double.valueOf(winrates[i][j]).toString());
+				getWinData.add(",");
 			}
+			getWinData.add("\n");
 			System.out.print("\n");
 		}
+		csvList.add(getWinData);
 	}
 	
 	public static double[][] getWinratesSerial(int games){
@@ -117,7 +148,7 @@ public class WinrateMatrixDriver {
 		System.out.println("Gini player took " + midTimeInSeconds + " seconds to train in serial.");
 		ArrayList<String> strSerialWinRate = new ArrayList<>();
 		strSerialWinRate.add("Gini player took " + Double.valueOf(midTimeInSeconds).toString() + " seconds to train in serial.");
-
+		strSerialWinRate.add("\n");
 		//run matchups
 		for(int i = 0;i < numPlayers;i ++) {
 			for(int j = i;j < numPlayers;j ++) {
@@ -127,11 +158,18 @@ public class WinrateMatrixDriver {
 				}else {
 					//run matchup
 					//System.out.println(i + ", " + j);
+					long serialT = System.nanoTime();
+					
 					int[] results = runMatchup(i,j,games,dtpTrainer);
 					turns += results[3];
 					cardsPlayed += results[4];
 					matchupWins[i][j] = (double)results[0]/(double)games;
 					matchupWins[j][i] = (double)results[1]/(double)games;
+					
+					long endMatchUp = System.nanoTime();
+					double elapsed = Double.valueOf(endMatchUp - serialT)/1_000_000_000;
+					playerRunTimes.set(i, playerRunTimes.get(i) + elapsed);
+					playerRunTimes.set(j, playerRunTimes.get(j) + elapsed);
 					
 				}
 			}
@@ -147,8 +185,12 @@ public class WinrateMatrixDriver {
 		System.out.println("Cards/second: " + (double)cardsPlayed/elapsedTimeInSeconds);
 		
 		strSerialWinRate.add("Time elapsed: " + Long.valueOf(elapsedTime).toString() + " ns == " + Double.valueOf(elapsedTimeInSeconds).toString() + " seconds");
+		strSerialWinRate.add("\n");
 		strSerialWinRate.add(Integer.valueOf(cardsPlayed).toString() + " cards played in " + Integer.valueOf(turns).toString() + " turns.");
+		strSerialWinRate.add("\n");
 		strSerialWinRate.add("Cards/second: " + Double.valueOf(elapsedTimeInSeconds/elapsedTimeInSeconds).toString());
+		strSerialWinRate.add("\n");
+
 		csvList.add(strSerialWinRate);
 		
 		return matchupWins;
@@ -174,7 +216,7 @@ public class WinrateMatrixDriver {
 		double midTimeInSeconds = (double)midTotalTime/1_000_000_000;
 		System.out.println("Gini player took " + midTimeInSeconds + " seconds to train in parallel.");
 		strParallelWinRate.add("Gini player took " + Double.valueOf(midTimeInSeconds).toString() + " seconds to train in parallel.");
-
+		strParallelWinRate.add("\n");
 		//run matchups
 		for(int i = 0;i < numPlayers;i ++) {
 			for(int j = i;j < numPlayers;j ++) {
@@ -234,9 +276,19 @@ public class WinrateMatrixDriver {
 		double elapsedTimeInSeconds = (double)elapsedTime/1_000_000_000;
 		
 		System.out.println("--------------------");
+		strParallelWinRate.add("--------------------");
+		strParallelWinRate.add("\n");
 		System.out.println("Total time elapsed: " + elapsedTime + " ns == " + elapsedTimeInSeconds + " seconds");
+		strParallelWinRate.add("Total time elapsed: " + elapsedTime + " ns == " + elapsedTimeInSeconds + " seconds");
+		strParallelWinRate.add("\n");
 		System.out.println(cardsPlayed + " cards played in " + turns + " turns.");
+		strParallelWinRate.add(cardsPlayed + " cards played in " + turns + " turns.");
+		strParallelWinRate.add("\n");
 		System.out.println("Cards/second: " + (double)cardsPlayed/elapsedTimeInSeconds);
+		strParallelWinRate.add("Cards/second: " + Double.valueOf(cardsPlayed/elapsedTimeInSeconds).toString());
+		strParallelWinRate.add("\n");
+		
+		csvList.add(strParallelWinRate);
 		
 		return matchupWins;
 		
@@ -289,12 +341,33 @@ public class WinrateMatrixDriver {
 		}
 	}
 
-	private void exportToCSV(ArrayList<ArrayList<String>> arrList) {
-		try (PrintWriter write = new PrintWriter(new File("Output.csv"))) {
+	private static void exportToCSV(ArrayList<ArrayList<String>> arrList, boolean serial) {
+		File file;
+		if (!serial) {
+			file = new File("Output_parallel.csv");
+			for(int i = 0; file.exists() == true; i++) {
+				file = new File("Output_parallel_"+i+".csv");
+			}			
+		}
+		else {
+			file = new File("Output_serial.csv");
+			for(int i = 1; file.exists() == true; i++) {
+				file = new File("Output_serial_"+i+".csv");
+			}	
+		}
+		try (PrintWriter write = new PrintWriter(file)) {
 			StringBuilder sb = new StringBuilder();
+			for (ArrayList<String> arr : arrList) {
+				for(String s : arr) {
+					sb.append(s);
+				}
+			}
+			
+			write.write(sb.toString());
 			
 		} catch (FileNotFoundException e) {
 			System.out.println(e.getMessage());
 		}
+		System.out.println("Exported WinRate Data to CSV file, " + file.getName());
 	}
 }

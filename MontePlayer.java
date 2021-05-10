@@ -130,6 +130,6 @@ class MontePlayer extends BasicBotV1_0 {
 		return mostExpensiveChoices;
 	}
 
-    private final int TURNS_TILL_MONTE = 3;
+    private final int TURNS_TILL_MONTE = 4;
     private Object lock = new Object();
 }

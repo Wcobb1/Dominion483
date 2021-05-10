@@ -24,6 +24,8 @@ class MonteSerial extends BasicBotV1_0 {
             cardNodes.add(new Node(c.getName(), c.getCost()));
         }        
         
+        cardNodes.add(new Node());
+        
         // Generate Simulations with a purchase of a selected card.
         for (Node n : cardNodes){            
             // Parallelism
