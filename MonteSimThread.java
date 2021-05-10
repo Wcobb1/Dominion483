@@ -10,42 +10,44 @@ public class MonteSimThread implements Runnable {
     private Thread t;
     private String threadName;
     public Kingdom kingdom;
-    public Node cNode;
+    public final Node cNode;
     public AtomicReference<Integer> pVisits;
-
-    MonteSimThread(String name, Node cardNode, AtomicReference<Integer> parentCount, Kingdom kingdom){
+    private Object lock;
+    
+    MonteSimThread(String name, Node cardNode, AtomicReference<Integer> parentCount, Kingdom kingdom, Object lock){
         this.cNode = cardNode;
         this.pVisits = parentCount;
         this.threadName = name;
         this.kingdom = kingdom;
-        //System.out.println("Created Thread : " + threadName);
+        this.lock = lock;
     }
 
     public void run(){
-        //System.out.println("Running " + threadName);
-        for (int i = 0; i < 150; i++){
+        for (int i = 0; i < 10; i++){
             try {
                 Kingdom k = new Kingdom(kingdom);
                 PlayerCommunication playerC = new PlayerCommunication();
-                Player us = new MoneyMakingBotV1_0_2(k, playerC, this.cNode.getCardName());
+                Player us = new BasicBotV1_0_2(k, playerC, this.cNode.getCardName());
                 Player opp = new MoneyMakingBotV1_0_2(k, playerC);
                 GameSimulator rs = new GameSimulator(us, opp);
                 int result = rs.runGame();
                 int[] scores = rs.getScores();
-                //System.out.print(scores[1] + " ");
-                //System.out.println(scores[0]);
-                this.cNode.setAvgScore(this.cNode.getAvgScore() + scores[0]);
-                this.cNode.setNodeVisits(this.cNode.getNodeVisits() + 1.0);
-                if (result == 0){
-                    this.cNode.setNodewins(this.cNode.getNodewins() + 1.0);
+                if (lock != null){
+                    synchronized(lock){
+                        this.cNode.setAvgScore(this.cNode.getAvgScore() + scores[0]);
+                        this.cNode.setNodeVisits(this.cNode.getNodeVisits() + 1.0);
+                        if (result == 0){
+                            this.cNode.setNodewins(this.cNode.getNodewins() + 1.0);
+                        }
+                        else if (result == 1){
+                            this.cNode.setNodewins(this.cNode.getNodewins() - 1.0);
+                        }
+                        else if (result == 2){
+                            this.cNode.setNodewins(this.cNode.getNodewins() + 0.5);
+                        }
+                        pVisits.set(pVisits.get() + 1);                	
+                    }
                 }
-                else if (result == 1){
-                    this.cNode.setNodewins(this.cNode.getNodewins() - 1.0);
-                }
-                else if (result == 2){
-                    this.cNode.setNodewins(this.cNode.getNodewins() + 0.5);
-                }
-                pVisits.set(pVisits.get() + 1);
 
                 if (Thread.interrupted())  // Clears interrupted status!
                     throw new InterruptedException();
@@ -57,7 +59,6 @@ public class MonteSimThread implements Runnable {
     }
 
     public void start() {
-        //System.out.println("Starting " +  threadName );
         if (t == null){
             t = new Thread(this, threadName);
             t.start();

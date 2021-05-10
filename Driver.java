@@ -3,30 +3,32 @@ package dominionAgents;
 import java.lang.Thread.State;
 import java.util.ArrayList;
 
-import org.graalvm.compiler.nodes.java.ArrayLengthNode;
-
 public class Driver {
     public static void main(String[] args){
         // If threads, 0. If serial run, 1;
-        boolean thread_run = true;
-        if (thread_run){
-            ArrayList<Thread> threadList = new ArrayList<>();
+        boolean thread_run = false;
+        if (thread_run == true){
+        	ArrayList<Thread> threadList = new ArrayList<>();
             ArrayList<Driver2> driver2List = new ArrayList<>();
 
             int games = 1000;
             String[] threadN = {"Thread-1", "Thread-2", "Thread-3", "Thread-4"};
-            for (int i = 0; i < 4; i++){
-                Driver2 d1 = new Driver2(threadN[i]);
-                driver2List.add(d1);
-                d1.start();
-                threadList.add(d1.getThread());    
-            }
-
-            ArrayList<ArrayList<Double>> threadStats = new ArrayList<>();
+			long startTime = System.nanoTime();
+        		for (int k = 0; k < games; k++){
+                    System.out.println("Thread " + k);
+                    Driver2 d1 = new Driver2("Thread " + k, 0);
+                    driver2List.add(d1);
+                    d1.start();
+                    threadList.add(d1.getThread());    
+                }
+        		
+        	
+        	
+        	ArrayList<ArrayList<Double>> threadStats = new ArrayList<>();
             try {
                 System.out.println("Waiting for threads to finish.");
-                for (int i = 0; i < 4; i++){
-                    threadList.get(i).join();
+                for (int l = 0; l < threadList.size(); l++){
+                    threadList.get(l).join();
                 }
             } catch (InterruptedException e) {
                 System.out.println("Main thread Interrupted");
@@ -38,7 +40,6 @@ public class Driver {
 
         	// 0 - winner[0], 1 - winner[1], 2 - winner[2], 3 - cumulativeScores[0], 4 - cumulativeScores[1], 5 - turns, 6 - cardsPlayed, 7 - elapsedTime
             double player1Wins = 0, player2Wins = 0, draws = 0, player1Score = 0, player2Score = 0, turns = 0, cardsPlayed = 0;
-            double time = 0;
             for (ArrayList<Double> tI : threadStats){
                 player1Wins += tI.get(0);
                 player2Wins += tI.get(1);
@@ -47,11 +48,12 @@ public class Driver {
                 player2Score += tI.get(4);
                 turns += tI.get(5);
                 cardsPlayed += tI.get(6);
-                time += tI.get(7);
             }
-
+			long endTime = System.nanoTime();
+			long elapsedTime = endTime - startTime;
+			
             System.out.println("Parallelized : ");
-            System.out.println("(Average) Time elapsed: " + time/4 + " ns == " + (time/1_000_000_000)/4 + " seconds");
+            System.out.println("(Average) Time elapsed: " + elapsedTime + " ns == " + (elapsedTime/1_000_000_000) + " seconds");
             System.out.println(cardsPlayed + " cards played in " + turns + " turns in " + games + " games:");
             System.out.println("Player 1: Win %: " + 100 *player1Wins/games + " - Avg. Score: " + player1Score/games);
             System.out.println("Player 2: Win %: " + 100 *player2Wins/games + " - Avg. Score: " + player2Score/games);
@@ -72,7 +74,7 @@ public class Driver {
             
             //DecisionTreePlayerTrainer trainer = new DecisionTreePlayerTrainer(1000);
             //DecisionTreePlayerTrainer trainer2 = new DecisionTreePlayerTrainer(1000);
-    
+            System.out.println("Parallelized");
             for(int i = 0;i < games;i ++) {
                 System.out.println("Game #" + (i+1));
                 Kingdom kingdom = new Kingdom();
@@ -81,10 +83,10 @@ public class Driver {
                 //Player p2 = new BasicBotV1_0(kingdom, pc);
                 //Player p1 = new BasicBotV1_0(kingdom, pc);
                 //Player p1 = new DecisionTreePlayerV1_0(kingdom, pc, trainer.getEarlyPrioList(), trainer.getMidPrioList(), trainer.getLatePrioList());
-                Player p1 = new AttackBotV1_0(kingdom, pc);
+                //Player p1 = new AttackBotV1_0(kingdom, pc);
                 //Player p1 = new MoneyMakingBotV1_0(kingdom, pc);
                 Player p2 = new MontePlayer(kingdom, pc);
-                //Player p2 = new RushBotV1_0(kingdom, pc);
+                Player p1 = new RushBotV1_0(kingdom, pc);
                 //Player p2 = new DecisionTreePlayerV1_0(kingdom, pc, trainer2.getEarlyPrioList(), trainer2.getMidPrioList(), trainer2.getLatePrioList());			
     
                 GameSimulator gs = new GameSimulator(p1, p2);
@@ -117,6 +119,9 @@ public class Driver {
             //sa.printWinnerOwnPercentage();
                 
         }
+        
+        
+        
     }
 }
 

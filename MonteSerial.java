@@ -5,8 +5,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import dominionAgents.CardData.CardType;
 
-class MontePlayer extends BasicBotV1_0 {
-    public MontePlayer(Kingdom k, PlayerCommunication pc){
+class MonteSerial extends BasicBotV1_0 {
+    public MonteSerial(Kingdom k, PlayerCommunication pc){
         super(k, pc);
     }
 
@@ -23,25 +23,18 @@ class MontePlayer extends BasicBotV1_0 {
         for (Card c : cards){
             cardNodes.add(new Node(c.getName(), c.getCost()));
         }        
-        cardNodes.add(new Node());
+        
         // Generate Simulations with a purchase of a selected card.
         for (Node n : cardNodes){            
             // Parallelism
             for(int i = 0; i < 3; i++){
-                MonteSimThread simN = new MonteSimThread(n.getCardName(), n, parentCount, kingdom, lock);
+                MonteSimThread simN = new MonteSimThread(n.getCardName(), n, parentCount, kingdom, null);
                 simList.add(simN);
-                simN.start();
+                simN.run();
                 threadList.add(simN.getThread());    
             }
         }
 
-        try {
-            for (int i = 0; i < threadList.size(); i++){
-                threadList.get(i).join();
-            }
-        } catch (InterruptedException e) {
-                System.out.println("MontePlayer thread Interrupted");
-        }
         if (cardNodes.size() <= 0){
             return "NA";
         }
@@ -131,5 +124,4 @@ class MontePlayer extends BasicBotV1_0 {
 	}
 
     private final int TURNS_TILL_MONTE = 3;
-    private Object lock = new Object();
 }
