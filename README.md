@@ -14,5 +14,5 @@ Drivers:
 
 - WinrateMatrixDriver : Performs matchups of different AIs serially/sequentially or parallel, depending on what you select. To change to  sequential execution, change serial to true on line 29. WinrateMatrixDriver calculates the time it takes to run each matchup and all matchups combined, along with providing a matrix for the win rate of each bot against other bots.
 
-- StatsDriver.java : Provides an average analysis of each player's deck at the end of a game. This can be used to identify which cards does the AI favor.
+- StatsDriver.java : Provides an average analysis of each player's deck at the end of a game. This can be used to identify which cards the AI favors.
 
