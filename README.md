@@ -8,7 +8,7 @@ Notes:
 
 - MontePlayer is a parallelized version of Monte Carlo AI Bot. MonteSerial should be used to perform sequential Monte Carlo.
 
-- AIs that can be run : AttackingBotV1_0, BasicBotV1_0, DecisionTreePlayerV1_0, MoneyMakingBotV1_0, MontePlayer (relatively slow), MonteSerial (slower than MontePlayer), RushBotV1_0 
+- AIs that can be run : AttackBotV1_0, BasicBotV1_0, DecisionTreePlayerV1_0, MoneyMakingBotV1_0, MontePlayer (relatively slow), MonteSerial (slower than MontePlayer), RushBotV1_0 
 
 Drivers:
 
