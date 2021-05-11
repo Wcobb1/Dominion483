@@ -204,7 +204,7 @@ public abstract class Player {
 		if(kingdom.kingdomIndex(cardName) >= 0) {
 			if(kingdom.canBuy(cardName)) {
 				Card newCard = new Card(cardName);
-				if(coins >= newCard.getCost() && buys > 0) {
+				if(coins >= newCard.getCost()) {
 					cardsGained.add(newCard);
 					kingdom.cardRemoved(cardName);
 					buys --;

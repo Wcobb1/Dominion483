@@ -54,32 +54,48 @@ public class Monte_MoneyBot extends BasicBotV1_0{
 
     protected void resolveBuyPhase() {
         
-        if (turnNumber <= 1 && !firstCard.equalsIgnoreCase("NA")){
+        if (turnNumber <= 1 && !firstCard.equalsIgnoreCase("NA") && buys >= 1){
             buyCard(firstCard);
         }
-        while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you can
-            buyCard("Province");
-        }
 
-        String cardToBuy = bestBuy();
-                          
-        if(coins < 8 && cardToBuy != null && actionNum < 1){
-            int index = kingdom.kingdomIndex(cardToBuy);
-            //System.out.print("buying "+cardToBuy+ " with " + coins + " coins left\n");
-            buyCard(cardToBuy);
-            Integer addHere = cardsBought.get(index);
-            addHere ++;
-            actionNum += 1;
-        }
+        if(buys >= 1){
+            while(kingdom.canBuy("Province") && (coins >= 8)){// buy as many provinces as you can
+                //System.out.print("buying province\n"); 
+                if (buys >= 1)
+                    buyCard("Province");            
+                else 
+                    break;
+             }
+             
+             String cardToBuy = bestBuy();
+             
+             while(kingdom.canBuy("Gold") && coins >= 6) { // while you can buy golds
+                //System.out.print("buying gold\n"); 
+                if (buys >= 1)
+                    buyCard("Gold");            
+                else 
+                    break;
+             }
+             while(kingdom.canBuy("Silver") && coins >= 3){ // if you cant buy golds buy silvers
+                //System.out.print("buying silver\n"); 
+                if (buys >= 1)
+                    buyCard("Silver");
+                else 
+                    break;
+             }
+             if(coins < 8 && cardToBuy != null && actionNum < 10){
+                int index = kingdom.kingdomIndex(cardToBuy);
+            
+                //System.out.print("buying "+cardToBuy+ " with " + coins + " coins left\n");
+                if (buys >= 1)
+                    buyCard(cardToBuy);
+                    cardsBought.set(index,cardsBought.get(index) + 1) ;
+                
+                    actionNum += 1;
+            }
 
-        while(kingdom.canBuy("Gold") && coins >= 6) { // while you can buy golds
-            buyCard("Gold");
         }
-        while(kingdom.canBuy("Silver") && coins >= 3){ // if you cant buy golds buy silvers
-        buyCard("Silver");
-        }
-
-
+       
 
         //super.resolveBuyPhase();
 

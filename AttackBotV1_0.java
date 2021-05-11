@@ -21,20 +21,20 @@ public class AttackBotV1_0 extends BasicBotV1_0{
 	}
 	
 	protected void resolveBuyPhase() {
-		
-		if(attacksInSupply) {
-			//buy an attack card if possible
-			Card potentialCard = getHighestAttackPossible(coins);
-			if(potentialCard != null) {
-				buyCard(potentialCard.getName());
+
+		if (buys >= 1){
+			if(attacksInSupply) {
+					//buy an attack card if possible
+					Card potentialCard = getHighestAttackPossible(coins);
+					if(potentialCard != null) {
+						buyCard(potentialCard.getName());
+					}
+					
+					super.resolveBuyPhase();
+			}else {
+				super.resolveBuyPhase();
 			}
-			
-			super.resolveBuyPhase();
-			
-		}else {
-			super.resolveBuyPhase();
 		}
-		
 	}
 	
 	public Card getHighestAttackPossible(int numCoins) {

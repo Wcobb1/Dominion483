@@ -254,10 +254,15 @@ public class Monte_BasicBot extends Player {
 		int cardsTrashed = 0;
 		for(int i = 0;i < hand.getHand().size() && cardsTrashed < 4;i ++) {
 			Card c = hand.getHand().get(i);
-			if(c.getName().equalsIgnoreCase("CURSE") || c.getName().equalsIgnoreCase("COPPER") || c.getName().equalsIgnoreCase("ESTATE") || c.getName().equalsIgnoreCase("CHAPEL")) {
-				trashCard(hand.getHand(), c);
-				i --;
-				cardsTrashed ++;
+			if(c.getName().equalsIgnoreCase("CURSE") ||
+					c.getName().equalsIgnoreCase("COPPER") ||
+					c.getName().equalsIgnoreCase("ESTATE") ||
+					c.getName().equalsIgnoreCase("CHAPEL")) {
+				if(!c.getName().equalsIgnoreCase("COPPER") || numTreasure > 4) {
+					trashCard(hand.getHand(), c);
+					i --;
+					cardsTrashed ++;
+				}
 			}
 		}
 	}

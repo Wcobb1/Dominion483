@@ -6,7 +6,7 @@ import java.util.Random;
 import dominionAgents.PlayerCommunication.PlayerCode;
 
 public class BasicBotV1_0 extends Player {
-	
+
 	public BasicBotV1_0(Kingdom k, PlayerCommunication pc) {
 		super(k, pc);
 	}
@@ -108,7 +108,8 @@ public class BasicBotV1_0 extends Player {
 				Random rand = new Random();
 				int choice = rand.nextInt(mostExpensiveChoices.size());
 				//buy random card from mostExpensiveChoices
-				buyCard(mostExpensiveChoices.get(choice).getName());
+				if (buys >= 1)
+					buyCard(mostExpensiveChoices.get(choice).getName());
 				
 				//if there is still at least 1 buy and at least 2 coins, recurse
 				if(buys > 0 && coins > 1) {
@@ -325,7 +326,7 @@ public class BasicBotV1_0 extends Player {
 			trashCard(hand.getHand(), c);
 			
 			//gain card costing up to 2 more than the trashed card
-			ArrayList<Card> bestChoices = highestCostList(cost+2);
+			ArrayList<Card> bestChoices = highestCostList(cost + 2);
 			if(bestChoices.size() > 0) {
 				choice = rand.nextInt(bestChoices.size());
 				gainCard(bestChoices.get(choice).getName());

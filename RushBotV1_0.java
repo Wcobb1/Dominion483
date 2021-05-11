@@ -168,7 +168,7 @@ public class RushBotV1_0 extends Player{
 				lowest = cardPriorities[index];
 			}
 		}
-		if(cardChosen != null) {
+		if(cardChosen != null && buys >= 1) {
 			buyCard(cardChosen);
 			if(buys > 0) {
 				resolveBuyPhase();

@@ -18,7 +18,7 @@ public class DecisionTreePlayerV1_0 extends BasicBotV1_0{
 	
 	public void removeUnusedCardsFromList(SortableGiniCardList sgcl) {
 		ArrayList<SupplyPile> supply = kingdom.getSupplyPiles();
-		for(int i = 0;i < sgcl.size();i ++) {
+		for(int i = 0;i < sgcl.size();i++) {
 			boolean found = false;
 			for(int j = 0;j < supply.size() && !found;j ++) {
 				if(sgcl != null) {
@@ -66,7 +66,7 @@ public class DecisionTreePlayerV1_0 extends BasicBotV1_0{
 		}else {
 			cardName = chooseHighestPriorityCardForCost(coins, latePrioList);
 		}
-		if(!cardName.equalsIgnoreCase("NA")) {
+		if(!cardName.equalsIgnoreCase("NA") && buys > 0) {
 			buyCard(cardName);
 		}
 		super.resolveBuyPhase();

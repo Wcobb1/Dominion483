@@ -28,8 +28,8 @@ public class MonteSimThread implements Runnable {
             try {
                 Kingdom k = new Kingdom(kingdom);
                 PlayerCommunication playerC = new PlayerCommunication();
-                Player us = new BasicBotV1_0_2(k, playerC, this.cNode.getCardName());
-                Player opp = new MoneyMakingBotV1_0_2(k, playerC);
+                Player us = new Monte_BasicBot(k, playerC, this.cNode.getCardName());
+                Player opp = new Monte_MoneyBot(k, playerC);
                 GameSimulator rs = new GameSimulator(us, opp);
                 int result = rs.runGame();
                 int[] scores = rs.getScores();

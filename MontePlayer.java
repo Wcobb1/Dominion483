@@ -60,9 +60,9 @@ class MontePlayer extends BasicBotV1_0 {
     @Override
     protected void resolveBuyPhase() {
         if (buys > 0){
-            if(turnNumber <= 1 || turnNumber % TURNS_TILL_MONTE == 0 || turnNumber % TURNS_TILL_MONTE+1 == 0){
+            if(turnNumber <= 1 || turnNumber % TURNS_TILL_MONTE == 0){
                 String c = getBestCard();
-                if (!c.equalsIgnoreCase("NA")){
+                if (!c.equalsIgnoreCase("NA") && buys >= 1){
                     buyCard(c);
                     if (buys > 0 && coins > 1){
                         resolveBuyPhase();
