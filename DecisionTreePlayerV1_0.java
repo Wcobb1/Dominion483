@@ -21,10 +21,12 @@ public class DecisionTreePlayerV1_0 extends BasicBotV1_0{
 		for(int i = 0;i < sgcl.size();i ++) {
 			boolean found = false;
 			for(int j = 0;j < supply.size() && !found;j ++) {
-				if(sgcl.get(i) != null) {
-					if(supply.get(j) != null) {
-						if(supply.get(j).getName().equalsIgnoreCase(sgcl.get(i).getName())) {
-							found = true;
+				if(sgcl != null) {
+					if(sgcl.get(i) != null) {
+						if(supply.get(j) != null) {
+							if(supply.get(j).getName().equalsIgnoreCase(sgcl.get(i).getName())) {
+								found = true;
+							}
 						}
 					}
 				}

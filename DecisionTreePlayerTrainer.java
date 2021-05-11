@@ -2,9 +2,9 @@ package dominionAgents;
 
 public class DecisionTreePlayerTrainer{
 
-	private SortableGiniCardList earlyPrioList;
-	private SortableGiniCardList midPrioList;
-	private SortableGiniCardList latePrioList;
+	private SortableGiniCardList earlyPrioList = new SortableGiniCardList();
+	private SortableGiniCardList midPrioList = new SortableGiniCardList();
+	private SortableGiniCardList latePrioList = new SortableGiniCardList();
 	private int turns;
 	private int cardsPlayed;
 	private Object lock = new Object();
@@ -127,15 +127,25 @@ public class DecisionTreePlayerTrainer{
 			
 		}
 		
+		SortableGiniCardList temp;
 		
 		//create early prio list
-		earlyPrioList = sa.getFirstTwoTurnsGiniData();
+		temp = sa.getFirstTwoTurnsGiniData();
+		if(temp != null) {
+			earlyPrioList = temp;
+		}
 		
 		//create mid prio list
-		midPrioList = sa.getMidGameGiniData();
+		temp = sa.getMidGameGiniData();
+		if(temp != null) {
+			midPrioList = temp;
+		}
 		
 		//create late prio list
-		latePrioList = sa.getLateGameGiniData();
+		temp = sa.getLateGameGiniData();
+		if(temp != null) {
+			latePrioList = temp;
+		}
 		
 		long endTime = System.nanoTime();
 		long elapsedTime = endTime - startTime;
