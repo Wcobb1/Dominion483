@@ -201,13 +201,15 @@ public abstract class Player {
 	
 	//add card to cardsGained ArrayList<Card> and update corresponding card's SupplyPile object in kingdom
 	public void buyCard(String cardName) {
-		if(kingdom.canBuy(cardName)) {
-			Card newCard = new Card(cardName);
-			if(coins >= newCard.getCost() && buys > 0) {
-				cardsGained.add(newCard);
-				kingdom.cardRemoved(cardName);
-				buys --;
-				coins -= newCard.getCost();
+		if(kingdom.kingdomIndex(cardName) >= 0) {
+			if(kingdom.canBuy(cardName)) {
+				Card newCard = new Card(cardName);
+				if(coins >= newCard.getCost() && buys > 0) {
+					cardsGained.add(newCard);
+					kingdom.cardRemoved(cardName);
+					buys --;
+					coins -= newCard.getCost();
+				}
 			}
 		}
 	}
