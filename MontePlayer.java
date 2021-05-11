@@ -2,6 +2,7 @@ package dominionAgents;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.*;
 
 import dominionAgents.CardData.CardType;
 
@@ -131,5 +132,5 @@ class MontePlayer extends BasicBotV1_0 {
 	}
 
     private final int TURNS_TILL_MONTE = 4;
-    private Object lock = new Object();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 }

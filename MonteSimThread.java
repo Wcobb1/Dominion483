@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 import dominionAgents.Node;
+import java.util.concurrent.locks.*;
 
 public class MonteSimThread implements Runnable {
     private Thread t;
@@ -12,9 +13,9 @@ public class MonteSimThread implements Runnable {
     public Kingdom kingdom;
     public final Node cNode;
     public AtomicReference<Integer> pVisits;
-    private Object lock;
+    private ReadWriteLock lock;
     
-    MonteSimThread(String name, Node cardNode, AtomicReference<Integer> parentCount, Kingdom kingdom, Object lock){
+    MonteSimThread(String name, Node cardNode, AtomicReference<Integer> parentCount, Kingdom kingdom, ReadWriteLock lock){
         this.cNode = cardNode;
         this.pVisits = parentCount;
         this.threadName = name;
@@ -32,29 +33,31 @@ public class MonteSimThread implements Runnable {
                 GameSimulator rs = new GameSimulator(us, opp);
                 int result = rs.runGame();
                 int[] scores = rs.getScores();
-                if (lock != null){
-                    synchronized(lock){
-                        this.cNode.setAvgScore(this.cNode.getAvgScore() + scores[0]);
-                        this.cNode.setNodeVisits(this.cNode.getNodeVisits() + 1.0);
-                        if (result == 0){
-                            this.cNode.setNodewins(this.cNode.getNodewins() + 1.0);
-                        }
-                        else if (result == 1){
-                            this.cNode.setNodewins(this.cNode.getNodewins() - 1.0);
-                        }
-                        else if (result == 2){
-                            this.cNode.setNodewins(this.cNode.getNodewins() + 0.5);
-                        }
-                        pVisits.set(pVisits.get() + 1);                	
-                    }
+                this.cNode.setNodeVisits(this.cNode.getNodeVisits() + 1.0);
+                if (this.lock != null) lock.writeLock().lock();
+                this.cNode.setAvgScore(this.cNode.getAvgScore() + scores[0]);
+                if (result == 0){
+                	this.cNode.setNodewins(this.cNode.getNodewins() + 1.0);
                 }
+                else if (result == 1){
+                	this.cNode.setNodewins(this.cNode.getNodewins() - 1.0);
+                }
+                else if (result == 2){
+                	this.cNode.setNodewins(this.cNode.getNodewins() + 0.5);
+                }
+                if (this.lock != null) lock.writeLock().unlock();
+                pVisits.set(pVisits.get() + 1);                	
+            
+            
 
-                if (Thread.interrupted())  // Clears interrupted status!
-                    throw new InterruptedException();
-
-            } catch (InterruptedException e) {
+	            if (Thread.interrupted())  // Clears interrupted status!
+	            	throw new InterruptedException();
+	        
+	        
+	         }
+             catch (InterruptedException e) {
                 System.out.println("Thread " +  threadName + " interrupted.");
-            }
+             }
         }
     }
 
