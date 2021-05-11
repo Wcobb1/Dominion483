@@ -25,7 +25,7 @@ public class WinrateMatrixDriver {
 	private static Vector<Double> playerRunTimes;
 	private static ArrayList<ArrayList<String>> csvList = new ArrayList<>();
 	private static boolean serial = false;
-	private static boolean noMonte = false;
+	private static boolean noMonte = true;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
