@@ -11,9 +11,10 @@ public class Node {
         this.uctVal = Double.NEGATIVE_INFINITY;
         //this.childArray = null;
         this.avgScore = 0;
+        this.cost = 0;
     }
 
-    public Node(String cardName){
+    public Node(String cardName, int cost){
         //this.c = new Card(cardName);
         this.cardName = cardName;
         //this.parent = null;
@@ -22,6 +23,7 @@ public class Node {
         this.uctVal = Double.NEGATIVE_INFINITY;
         //this.childArray = null;
         this.avgScore = 0;
+        this.cost = cost;
     }
 
     /*public Node getNodeParent(){
@@ -88,6 +90,10 @@ public class Node {
         this.avgScore = score;
     }
 
+    public int getCost(){
+        return this.cost;
+    }
+
     //private Card c;
     //private Node parent;
     private String cardName;
@@ -97,4 +103,5 @@ public class Node {
     private double wins;
     private double avgScore;
     private double uctVal;
+    private int cost;
 }
