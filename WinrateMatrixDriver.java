@@ -333,7 +333,7 @@ public class WinrateMatrixDriver {
 		}else if(p == 2) {
 			return new DecisionTreePlayerV1_0(k, pc, dtpt.getEarlyPrioList(), dtpt.getMidPrioList(), dtpt.getLatePrioList());
 		}else if(p == 3) {
-			return new MoneyMakingBotV1_0_2(k, pc);
+			return new MoneyMakingBotV1_0(k, pc);
 		}else if (p == 4) {
 			return new RushBotV1_0(k, pc);
 		} else {
