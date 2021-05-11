@@ -24,7 +24,7 @@ public class WinrateMatrixDriver {
 	
 	private static Vector<Double> playerRunTimes;
 	private static ArrayList<ArrayList<String>> csvList = new ArrayList<>();
-	private static boolean serial = true;
+	private static boolean serial = false;
 	private static boolean noMonte = true;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -143,7 +143,7 @@ public class WinrateMatrixDriver {
 		
 		long startTime = System.nanoTime();
 		
-		DecisionTreePlayerTrainer dtpTrainer = new DecisionTreePlayerTrainer(games, false);
+		DecisionTreePlayerTrainer dtpTrainer = new DecisionTreePlayerTrainer(games, true);
 		
 		long midTime = System.nanoTime();
 		long midTotalTime = midTime - startTime;
