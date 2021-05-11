@@ -6,7 +6,7 @@ import java.util.Random;
 import dominionAgents.PlayerCommunication.PlayerCode;
 
 public class BasicBotV1_0 extends Player {
-
+	
 	public BasicBotV1_0(Kingdom k, PlayerCommunication pc) {
 		super(k, pc);
 	}
@@ -222,10 +222,15 @@ public class BasicBotV1_0 extends Player {
 		int cardsTrashed = 0;
 		for(int i = 0;i < hand.getHand().size() && cardsTrashed < 4;i ++) {
 			Card c = hand.getHand().get(i);
-			if(c.getName().equalsIgnoreCase("CURSE") || c.getName().equalsIgnoreCase("COPPER") || c.getName().equalsIgnoreCase("ESTATE") || c.getName().equalsIgnoreCase("CHAPEL")) {
-				trashCard(hand.getHand(), c);
-				i --;
-				cardsTrashed ++;
+			if(c.getName().equalsIgnoreCase("CURSE") ||
+					c.getName().equalsIgnoreCase("COPPER") ||
+					c.getName().equalsIgnoreCase("ESTATE") ||
+					c.getName().equalsIgnoreCase("CHAPEL")) {
+				if(!c.getName().equalsIgnoreCase("COPPER") || numTreasure > 4) {
+					trashCard(hand.getHand(), c);
+					i --;
+					cardsTrashed ++;
+				}
 			}
 		}
 	}
@@ -320,7 +325,7 @@ public class BasicBotV1_0 extends Player {
 			trashCard(hand.getHand(), c);
 			
 			//gain card costing up to 2 more than the trashed card
-			ArrayList<Card> bestChoices = highestCostList(cost);
+			ArrayList<Card> bestChoices = highestCostList(cost+2);
 			if(bestChoices.size() > 0) {
 				choice = rand.nextInt(bestChoices.size());
 				gainCard(bestChoices.get(choice).getName());

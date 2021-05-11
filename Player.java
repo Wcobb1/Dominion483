@@ -21,6 +21,7 @@ public abstract class Player {
 	//used for stats
 	protected int turnNumber = 0;
 	protected PlayerStats ps;
+	protected int numTreasure = 7;
 	
 	//constructor
 	public Player(Kingdom k, PlayerCommunication pc) {
@@ -216,6 +217,15 @@ public abstract class Player {
 		Card newCard = new Card(cardName);
 		cardsGained.add(newCard);
 		kingdom.cardRemoved(cardName);
+		if(newCard.isCardType(CardData.CardType.TREASURE)) {
+			if(cardName.equalsIgnoreCase("Copper")) {
+				numTreasure ++;
+			}else if(cardName.equalsIgnoreCase("Silver")) {
+				numTreasure += 2;
+			}else if(cardName.equalsIgnoreCase("Gold")) {
+				numTreasure += 3;
+			}
+		}
 	}
 	
 	//For those cards that require a bit more work

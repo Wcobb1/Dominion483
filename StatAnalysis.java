@@ -459,7 +459,7 @@ public class StatAnalysis {
 				giniIndex = 1.0 - (double)(Math.pow(winFraction,2) + Math.pow(lossFraction,2));
 			}
 			//custom value using gini index to make successful cards highest priority
-			if(!winGreaterThanLoss) {
+			if(!winGreaterThanLoss && giniIndex > 0.5) {
 				giniIndex = 1.0 - giniIndex;
 			}
 			SortableGiniCard sgc = new SortableGiniCard(CardData.getCardName(i), giniIndex);
@@ -486,7 +486,7 @@ public class StatAnalysis {
 				giniIndex = 1.0 - (double)(Math.pow(winFraction,2) + Math.pow(lossFraction,2));
 			}
 			//custom value using gini index to make successful cards highest priority
-			if(!winGreaterThanLoss) {
+			if(!winGreaterThanLoss && giniIndex > 0.5) {
 				giniIndex = 1.0 - giniIndex;
 			}
 			SortableGiniCard sgc = new SortableGiniCard(CardData.getCardName(i), giniIndex);
@@ -513,7 +513,7 @@ public class StatAnalysis {
 				giniIndex = 1.0 - (double)(Math.pow(winFraction,2) + Math.pow(lossFraction,2));
 			}
 			//custom value using gini index to make successful cards highest priority
-			if(!winGreaterThanLoss) {
+			if(!winGreaterThanLoss && giniIndex > 0.5) {
 				giniIndex = 1.0 - giniIndex;
 			}
 			SortableGiniCard sgc = new SortableGiniCard(CardData.getCardName(i), giniIndex);
